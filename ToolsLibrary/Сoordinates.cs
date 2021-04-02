@@ -31,6 +31,10 @@ namespace ToolsLibrary
         {
             return new coord(value.x, value.y);
         }
+        public override string ToString()
+        {
+            return $"x={x} y={y}";
+        }
         public coord up() => (x, y - 1);
         public coord down() => (x, y + 1);    
         public coord left() => (x - 1, y);
