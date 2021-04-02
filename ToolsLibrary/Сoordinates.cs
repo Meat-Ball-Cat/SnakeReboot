@@ -6,38 +6,38 @@ using System.Threading.Tasks;
 
 namespace ToolsLibrary
 {
-    public struct coord
+    public struct Coord
     {
-        public int x { get; private set; }
-        public int y { get; private set; }
-        public coord(int x, int y)
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public Coord(int x, int y)
         {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
-        public static coord operator +(coord x, coord y)
+        public static Coord operator +(Coord x, Coord y)
         {
-            return new coord(x.x + y.x, x.y + y.y);
+            return new Coord(x.X + y.X, x.Y + y.Y);
         }
-        public static coord operator -(coord x, coord y)
+        public static Coord operator -(Coord x, Coord y)
         {
-            return new coord(x.x - y.x, x.y - y.y);
+            return new Coord(x.X - y.X, x.Y - y.Y);
         }
-        public static implicit operator (int x, int y)(coord value)
+        public static implicit operator (int x, int y)(Coord value)
         {
-            return (value.x, value.y);
+            return (value.X, value.Y);
         }
-        public static implicit operator coord((int x, int y) value)
+        public static implicit operator Coord((int x, int y) value)
         {
-            return new coord(value.x, value.y);
+            return new Coord(value.x, value.y);
         }
         public override string ToString()
         {
-            return $"x={x} y={y}";
+            return $"x={X} y={Y}";
         }
-        public coord up() => (x, y - 1);
-        public coord down() => (x, y + 1);    
-        public coord left() => (x - 1, y);
-        public coord right() => (x + 1, y);
+        public Coord Up() => (X, Y - 1);
+        public Coord Down() => (X, Y + 1);    
+        public Coord Left() => (X - 1, Y);
+        public Coord Right() => (X + 1, Y);
     }
 }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4745C14E-5C23-4AF4-B9B1-437E4C3416C5}</ProjectGuid>
+    <ProjectGuid>{2B1482D7-7F9B-48B6-ADB7-BBE3888369F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GameLibrary</RootNamespace>
-    <AssemblyName>GameLibrary</AssemblyName>
+    <RootNamespace>SquareRectangle</RootNamespace>
+    <AssemblyName>SquareRectangle</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,18 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Berry.cs" />
-    <Compile Include="GamesSquareValues.cs" />
-    <Compile Include="ConsoleGemeField.cs" />
+    <Compile Include="ConsoleWithSquare.cs" />
+    <Compile Include="IRectangle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Snake.cs" />
-    <Compile Include="SnakeField.cs" />
+    <Compile Include="SignConsole.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SquareRectangle\SquareRectangle.csproj">
-      <Project>{2b1482d7-7f9b-48b6-adb7-bbe3888369f7}</Project>
-      <Name>SquareRectangle</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ToolsLibrary\ToolsLibrary.csproj">
       <Project>{7b133371-18b6-49a4-b000-f315a52388e4}</Project>
       <Name>ToolsLibrary</Name>
