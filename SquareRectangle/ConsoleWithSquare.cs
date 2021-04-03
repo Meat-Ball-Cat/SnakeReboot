@@ -12,13 +12,13 @@ namespace SquareRectangle
         private static ConsoleWithSquare Value;
         public int Width { get; }
         public int Height { get; }
-        Dictionary<IRectangle, Coord> Rectangles;
+        Dictionary<ILoadRectangle, Coord> Rectangles;
         private ConsoleWithSquare()
         {
             Width = Console.WindowWidth / 2;
             Height = Console.WindowHeight;
             Value = this;
-            Rectangles = new Dictionary<IRectangle, Coord>();
+            Rectangles = new Dictionary<ILoadRectangle, Coord>();
         }
         public static ConsoleWithSquare CreateConsoleWithSquare()
         {
@@ -28,7 +28,7 @@ namespace SquareRectangle
             }
             return Value;
         }
-        public void AddRectangle(Coord start, IRectangle value)
+        public void AddRectangle(Coord start, ILoadRectangle value)
         {
             if(start.X + value.Width <= Width && start.Y + value.Height <= Height)
             {
@@ -39,7 +39,7 @@ namespace SquareRectangle
                 throw new Exception("Невозможные координаты вписываемого прямоугольника");
             }            
         }
-        public void Print(Coord coord, SignConsole sign, IRectangle initiator)
+        public void Print(Coord coord, SignConsole sign, ILoadRectangle initiator)
         {
             if (Rectangles.ContainsKey(initiator))
             {
@@ -50,6 +50,22 @@ namespace SquareRectangle
             }
         }
 
+        public void Load()
+        {
+            foreach(var rectangle in Rectangles.Keys)
+            {
+                rectangle.Load();
+            }
+        }
 
+        public void Close()
+        {
+            foreach (var rectangle in Rectangles.Keys)
+            {
+                rectangle.Close();
+            }
+            Rectangles = null;
+            Console.Clear();
+        }
     }
 }

@@ -42,8 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Berry.cs" />
+    <Compile Include="ButtonInConsole.cs" />
+    <Compile Include="ConsoleMenu.cs" />
     <Compile Include="GamesSquareValues.cs" />
     <Compile Include="ConsoleGameField.cs" />
+    <Compile Include="IButton.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Snake.cs" />
     <Compile Include="SnakeField.cs" />

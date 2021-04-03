@@ -6,7 +6,7 @@ namespace GameLibrary
 {
     namespace SnakeGame
     {
-        public class SnakeField : IRectangle
+        public class SnakeField : ILoadRectangle
         {
             GamesSquareValues[,] Value { get; }
             public int Width { get; }
@@ -42,7 +42,12 @@ namespace GameLibrary
                 }
                 Console.SetCursorPosition(0, 0);
             }
-            public void DisplayAll()
+            private void DisplayState(Coord xy) => Location.Print(xy, Value[xy.X, xy.Y], this);
+            public void AddSnake(Coord coord) => ChangeCell(coord, GamesSquareValues.snake);
+            public void RemoveSnake(Coord coord) => ChangeCell(coord, GamesSquareValues.nothing);
+            public void AddBerry(Coord coord) => ChangeCell(coord, GamesSquareValues.snakeBerry);
+
+            public void Load()
             {
                 for (int i = 0; i < Width; i++)
                 {
@@ -52,10 +57,17 @@ namespace GameLibrary
                     }
                 }
             }
-            private void DisplayState(Coord xy) => Location.Print(xy, Value[xy.X, xy.Y], this);
-            public void AddSnake(Coord coord) => ChangeCell(coord, GamesSquareValues.snake);
-            public void RemoveSnake(Coord coord) => ChangeCell(coord, GamesSquareValues.nothing);
-            public void AddBerry(Coord coord) => ChangeCell(coord, GamesSquareValues.snakeBerry);
+
+            public void Close()
+            {
+                for (int i = 0; i < Width; i++)
+                {
+                    for (int j = 0; j < Height; j++)
+                    {
+                        ChangeCell((i, j), GamesSquareValues.nothing);
+                    }
+                }
+            }
         }
     }
 }

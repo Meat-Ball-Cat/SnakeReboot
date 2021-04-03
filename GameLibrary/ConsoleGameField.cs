@@ -14,7 +14,7 @@ namespace GameLibrary
         public int Height { get; }
         IPrintInRectangle<SignConsole> Location { get; }
 
-        Dictionary<IRectangle, Coord> Rectangles;
+        Dictionary<ILoadRectangle, Coord> Rectangles;
 
         Dictionary<GamesSquareValues, SignConsole> SquareValue;
         public ConsoleGameField(int width, int height, IPrintInRectangle<SignConsole> locatoin, Dictionary<GamesSquareValues, SignConsole> squareValue)
@@ -23,9 +23,9 @@ namespace GameLibrary
             Height = height;
             Location = locatoin;
             SquareValue = squareValue;
-            Rectangles = new Dictionary<IRectangle, Coord>();
+            Rectangles = new Dictionary<ILoadRectangle, Coord>();
         }
-        public void AddRectangle(Coord start, IRectangle value)
+        public void AddRectangle(Coord start, ILoadRectangle value)
         {
             if (start.X + value.Width <= Width && start.Y + value.Height <= Height)
             {
@@ -37,9 +37,26 @@ namespace GameLibrary
             }
         }
 
-        public void Print(Coord coord, GamesSquareValues value, IRectangle initiator)
+        public void Print(Coord coord, GamesSquareValues value, ILoadRectangle initiator)
         {
             Location.Print(coord + Rectangles[initiator], SquareValue[value], this);
+        }
+
+        public void Load()
+        {
+            foreach (var rectangle in Rectangles.Keys)
+            {
+                rectangle.Load();
+            }
+        }
+
+        public void Close()
+        {
+            foreach (var rectangle in Rectangles.Keys)
+            {
+                rectangle.Close();
+            }
+            Rectangles = null;
         }
     }
 }

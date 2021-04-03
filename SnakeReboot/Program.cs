@@ -14,6 +14,7 @@ namespace SnakeReboot
         static void Main(string[] args)
         {
             //ToolsLibrary.FullScreen.FullScreenOn();
+            var z = SignConsole.GetSignConsoles("djfhksddkhls");
             var x = ConsoleWithSquare.CreateConsoleWithSquare();
             var d = new Dictionary<GamesSquareValues, SignConsole>();
             d.Add(GamesSquareValues.snake, new SignConsole(' ', ConsoleColor.White));
@@ -47,6 +48,7 @@ namespace SnakeReboot
             KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => snake.Down());
             KeyPress.Set(ConsoleKey.LeftArrow, (obj, ar) => snake.Left());
             KeyPress.Set(ConsoleKey.RightArrow, (obj, ar) => snake.Right());
+            KeyPress.Set(ConsoleKey.Escape, (obj, ar) => x.Close());
 
 
 
