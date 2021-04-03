@@ -87,7 +87,6 @@ namespace GameLibrary
 
             private void ChangeDirection(Direction.direction direction)
             {
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
                 NextDirection = direction;
                 if (Controbility && !Direction.IsOpposit(NextDirection, NowDirection))
                 {
