@@ -10,10 +10,10 @@ namespace SquareRectangle
     }
     public interface IPrint<T>
     {
-        void Print(Coord coord, T value);
+        void Print(Coord coord, T value, IRectangle initiator);
     }
-    public interface IPrintInRectangle<T> : IPrint<T>, IRectangle 
-    {
-        IPrintInRectangle<T> GetRectangle(Coord start, Coord end);
+    public interface IPrintInRectangle<T> : IPrint<T>, IRectangle
+    { 
+        void AddRectangle(Coord start, IRectangle value);
     }
 }

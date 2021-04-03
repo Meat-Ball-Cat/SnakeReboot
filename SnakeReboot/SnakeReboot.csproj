@@ -54,6 +54,10 @@
       <Project>{4745c14e-5c23-4af4-b9b1-437e4c3416c5}</Project>
       <Name>GameLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SquareRectangle\SquareRectangle.csproj">
+      <Project>{2b1482d7-7f9b-48b6-adb7-bbe3888369f7}</Project>
+      <Name>SquareRectangle</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToolsLibrary\ToolsLibrary.csproj">
       <Project>{7b133371-18b6-49a4-b000-f315a52388e4}</Project>
       <Name>ToolsLibrary</Name>

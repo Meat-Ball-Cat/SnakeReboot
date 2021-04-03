@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ToolsLibrary;
 
@@ -84,8 +85,9 @@ namespace GameLibrary
                 }
             }
 
-            public void ChangeDirection(Direction.direction direction)
+            private void ChangeDirection(Direction.direction direction)
             {
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
                 NextDirection = direction;
                 if (Controbility && !Direction.IsOpposit(NextDirection, NowDirection))
                 {
@@ -93,6 +95,10 @@ namespace GameLibrary
                     Controbility = false;
                 }
             }
+            public void Up() => ChangeDirection(Direction.direction.up);
+            public void Down() => ChangeDirection(Direction.direction.down);
+            public void Left() => ChangeDirection(Direction.direction.left);
+            public void Right() => ChangeDirection(Direction.direction.right);
             void IsDie()
             {
                 Alife = false;

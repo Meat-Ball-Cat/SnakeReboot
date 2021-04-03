@@ -6,33 +6,26 @@ namespace GameLibrary
 {
     namespace SnakeGame
     {
-        public class SnakeField
+        public class SnakeField : IRectangle
         {
-            GamesSquareValues[,] value { get; }
+            GamesSquareValues[,] Value { get; }
             public int Width { get; }
             public int Height { get; }
             IPrintInRectangle<GamesSquareValues> Location { get; }
-            Coord start { get; }
-            public SnakeField(Coord start, Coord end, IPrintInRectangle<GamesSquareValues> locatoin)
+            public SnakeField(int width, int height, IPrintInRectangle<GamesSquareValues> locatoin)
             {
-                Width = end.X - start.X;
-                Height = end.Y - start.Y;
-                value = new GamesSquareValues[Width, Height];
-                Location = locatoin;
-                this.start = start;
-                if (Width > Location.Width || Height > Location.Height)
-                {
-                    throw new Exception("Размер поля больше возможного отображения");
-                }
-                Inicializated();
+                Width = width;
+                Height = height;
+                Value = new GamesSquareValues[Width, Height];
+                Location = locatoin;              
             }
             public GamesSquareValues ReturnCell(Coord xy)
             {
-                return value[xy.X, xy.Y];
+                return Value[xy.X, xy.Y];
             }
             private void ChangeCell(Coord xy, GamesSquareValues state)
             {
-                value[xy.X, xy.Y] = state;
+                Value[xy.X, xy.Y] = state;
                 DisplayState(xy);
             }
             public void Inicializated()
@@ -59,13 +52,7 @@ namespace GameLibrary
                     }
                 }
             }
-            private void DisplayState(Coord xy)
-            {
-
-                var thisValue = value[xy.X, xy.Y];
-                xy += start;
-                Location.Print(xy, thisValue);                
-            }
+            private void DisplayState(Coord xy) => Location.Print(xy, Value[xy.X, xy.Y], this);
             public void AddSnake(Coord coord) => ChangeCell(coord, GamesSquareValues.snake);
             public void RemoveSnake(Coord coord) => ChangeCell(coord, GamesSquareValues.nothing);
             public void AddBerry(Coord coord) => ChangeCell(coord, GamesSquareValues.snakeBerry);

@@ -7,20 +7,49 @@ using ToolsLibrary;
 
 namespace SquareRectangle
 {
-    class ConsoleWithSquare : IPrintInRectangle<SignConsole>
+    public class ConsoleWithSquare : IPrintInRectangle<SignConsole>
     {
-        public int Width => throw new NotImplementedException();
-
-        public int Height => throw new NotImplementedException();
-
-        public IPrintInRectangle<SignConsole> GetRectangle(Coord start, Coord end)
+        private static ConsoleWithSquare Value;
+        public int Width { get; }
+        public int Height { get; }
+        Dictionary<IRectangle, Coord> Rectangles;
+        private ConsoleWithSquare()
         {
-            throw new NotImplementedException();
+            Width = Console.WindowWidth / 2;
+            Height = Console.WindowHeight;
+            Value = this;
+            Rectangles = new Dictionary<IRectangle, Coord>();
+        }
+        public static ConsoleWithSquare CreateConsoleWithSquare()
+        {
+            if(Value == null)
+            {
+                Value = new ConsoleWithSquare(); 
+            }
+            return Value;
+        }
+        public void AddRectangle(Coord start, IRectangle value)
+        {
+            if(start.X + value.Width <= Width && start.Y + value.Height <= Height)
+            {
+                Rectangles.Add(value, start);
+            }
+            else
+            {
+                throw new Exception("Невозможные координаты вписываемого прямоугольника");
+            }            
+        }
+        public void Print(Coord coord, SignConsole sign, IRectangle initiator)
+        {
+            if (Rectangles.ContainsKey(initiator))
+            {
+                coord += Rectangles[initiator];
+                Console.SetCursorPosition(coord.X * 2, coord.Y);
+                Console.BackgroundColor = sign.BackColor;
+                Console.Write("" + sign.FirstLetter + sign.SecondLetter);
+            }
         }
 
-        public void Print(Coord coord, SignConsole value)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
