@@ -5,85 +5,79 @@ using ToolsLibrary;
 
 namespace SquareRectangle
 {
-    public class ManagerConsoleSquare : IPrintInRectangle<SignConsole>
+    public class ManagerConsoleSquare : DrawnRectangle<SignConsole>, ISecuredPrinter<SignConsole>
     {
-        public int Width { get; }
-        public int Height { get; }
-        public IPrintInRectangle<SignConsole> Location { get; }
-        Dictionary<ILoadRectangle, Coord> Rectangles { get; set; }
-        Stack<ILoadRectangle>[,] Values { get; }
-        public ManagerConsoleSquare(int width, int height, IPrintInRectangle<SignConsole> location)
+        Dictionary<object, Coord> ObjectInRectangles { get; set; }
+        Stack<object>[,] Values { get; }
+        public ManagerConsoleSquare(int width, int height, ICoordPrint<SignConsole> location) : base(width, height, location)
         {
-            Width = width;
-            Height = height;
-            Location = location;
-            Rectangles = new Dictionary<ILoadRectangle, Coord>();
-            Values = new Stack<ILoadRectangle>[Width, Height];
+            ObjectInRectangles = new Dictionary<object, Coord>();
+            Values = new Stack<object>[Width, Height];
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    Values[i, j] = new Stack<ILoadRectangle>();
+                    Values[i, j] = new Stack<object>();
                 }
             }
         }
-        public void AddRectangle(Coord start, ILoadRectangle value)
+        public bool Registrated(Coord O, object initiator, Coord[] values)
         {
-            if (start.X + value.Width <= Width && start.Y + value.Height <= Height)
+            bool sucsess = true;
+            foreach (var coord in values)
             {
-                Rectangles.Add(value, start);
-                for (int i = 0; i < value.Width; i++)
+                var currentCoord = coord + O;
+                if (currentCoord.X < 0 || Width <= currentCoord.X || currentCoord.Y < 0 || Height <= currentCoord.Y)
                 {
-                    for (int j = 0; j < value.Height; j++)
+                    throw new ArgumentOutOfRangeException();
+                }
+            }
+            ObjectInRectangles.Add(initiator, O);
+            foreach (var coord in values)
+            {
+                var currentCoord = coord + O;
+                Values[currentCoord.X, currentCoord.Y].Push(initiator);
+            }
+            return sucsess;
+        }
+        public void RemoveObject(object value)
+        {
+            if (ObjectInRectangles.ContainsKey(value))
+            {
+                var coordStart = ObjectInRectangles[value];
+                for (int i = 0; i < Width; i++)
+                {
+                    for (int j = 0; j < Height; j++)
                     {
-                        Values[i = start.X, j + start.Y].Push(value);
+                        Values[i, j] = new Stack<object>(Values[i, j].Where(x => x != value));
                     }
                 }
-            }
-            else
-            {
-                throw new Exception("Невозможные координаты вписываемого прямоугольника");
+                ObjectInRectangles.Remove(value);
             }
         }
-        public void RemoveLastRectangle(ILoadRectangle value)
+        public void Print(Coord coord, SignConsole value, object initiator)
         {
-            if (Rectangles.ContainsKey(value))
-            {
-                var coordStart = Rectangles[value];
-                for (int i = coordStart.X; i < coordStart.X + value.Width; i++)
-                {
-                    for (int j = coordStart.Y; j < coordStart.Y + value.Height; j++)
-                    {
-                        Values[i, j] = new Stack<ILoadRectangle>(Values[i, j].Where( x => x != value));
-                    }
-                }
-                Rectangles.Remove(value);                
-            }
-        }
-        public void Print(Coord coord, SignConsole value, ILoadRectangle initiator)
-        {
-            coord += Rectangles[initiator];
-            if(Values[coord.X, coord.Y].Peek() == initiator)
+            coord += ObjectInRectangles[initiator];
+            if (Values[coord.X, coord.Y].Peek() == initiator)
             {
                 Location.Print(coord, value, this);
             }
         }
 
-        public void Load()
+        public override void Close()
         {
-            foreach (var rectangle in Rectangles.Keys)
+            foreach (var rectangle in ObjectInRectangles.Keys)
             {
-                rectangle.Load();
+                ((ILoad)rectangle).Close();
             }
+            ObjectInRectangles = null;
         }
-
-        public void Close()
+        public override void Load()
         {
-            foreach (var rectangle in Rectangles.Keys)
+            foreach (var rectangle in ObjectInRectangles.Keys)
             {
-                rectangle.Close();
+                ((ILoad)rectangle).Load();
             }
-            Rectangles = null;
         }
     }
 }

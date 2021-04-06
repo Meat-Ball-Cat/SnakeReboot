@@ -9,13 +9,13 @@ namespace GameLibrary
 {
     namespace MenuLibrary
     {
-        public abstract class Menu<T> where T : IButton 
+        public class KeyboardMenu<T> where T : IButton
         {
             public string Name { get; }
-            protected LinkedList<T> Buttons { get; }
-            protected LinkedListNode<T> CurrentButton { get; set; }
+            public LinkedList<T> Buttons { get; }
+            public LinkedListNode<T> CurrentButton { get; set; }
             bool Curcule { get; set; }
-            public Menu(string name, bool curcule = false)
+            public KeyboardMenu(string name, bool curcule = false)
             {
                 Buttons = new LinkedList<T>();
                 Name = name;
@@ -24,17 +24,20 @@ namespace GameLibrary
             public void Press() => CurrentButton?.Value.Press();
             public void Next()
             {
-                if(CurrentButton.Next != null && Curcule)
-                {
-                    CurrentButton = CurrentButton.Next;
+                CurrentButton.Value.NotCurrent();
+                if (CurrentButton.Next != null)
+                {                   
+                    CurrentButton = CurrentButton.Next;   
                 }
                 else if (Curcule)
                 {
                     CurrentButton = CurrentButton.List.First;
                 }
+                CurrentButton.Value.IsCurrent();
             }
             public void Previous()
             {
+                CurrentButton.Value.NotCurrent();
                 if (CurrentButton.Previous != null && Curcule)
                 {
                     CurrentButton = CurrentButton.Previous;
@@ -43,6 +46,11 @@ namespace GameLibrary
                 {
                     CurrentButton = CurrentButton.List.Last;
                 }
+                CurrentButton.Value.IsCurrent();
+            }
+            public void AddLastButton(T button)
+            {
+                Buttons.AddLast(button);
             }
 
         }

@@ -4,53 +4,99 @@ using ToolsLibrary;
 
 namespace SquareRectangle
 {
-    public class Rectangle<T> : IPrintInRectangle<T>
+    public class Rectangle : IRectangle
     {
-        public Rectangle(int width, int height, IPrintInRectangle<T> location)
+        public Rectangle(int width, int height)
         {
             Width = width;
             Height = height;
-            Location = location;
         }
-
         public int Width { get; }
-
         public int Height { get; }
-        public IPrintInRectangle<T> Location { get; }
-        Dictionary<ILoadRectangle, Coord> Rectangles { get; set; }
-
-        public virtual void AddRectangle(Coord start, ILoadRectangle value)
+        public Coord[] GetCoord()
         {
-            if (start.X + value.Width <= Width && start.Y + value.Height <= Height)
+            var result = new List<Coord>();
+            for (int i = 0; i < Width; i++)
             {
-                Rectangles.Add(value, start);
+                for (int j = 0; j < Height; j++)
+                {
+                    result.Add((i, j));
+                }
             }
-            else
+            return result.ToArray();
+        }
+    }
+    public abstract class DrawnRectangle<T> : Rectangle, ILoad
+    {
+        protected ICoordPrint<T> Location { get; }
+        public DrawnRectangle(int width, int height, ICoordPrint<T> location) : base(width, height)
+        {
+            Location = location ?? throw new ArgumentNullException();
+        }
+        public abstract void Load();
+        public abstract void Close();      
+    }
+    public abstract class DrawingRectangle<T, R> : DrawnRectangle<T>, ISecuredPrinter<R>
+    {
+        public DrawingRectangle(int width, int height, ICoordPrint<T> location) : base(width, height, location) 
+        {
+            ObjectInRectangles = new Dictionary<object, Coord>();
+            Values = new object[Width, Height];
+        }
+        Dictionary<object, Coord> ObjectInRectangles { get; set; }
+        object[,] Values { get; }
+        public override void Close()
+        {
+            foreach (var rectangle in ObjectInRectangles.Keys)
             {
-                throw new Exception("Невозможные координаты вписываемого прямоугольника");
+                ((ILoad)rectangle).Close();
+            }
+            ObjectInRectangles = null;
+        }
+        public override void Load()
+        {
+            foreach (var rectangle in ObjectInRectangles.Keys)
+            {
+                ((ILoad)rectangle).Load();
             }
         }
-
-        public virtual void Close()
+        public virtual void Print(Coord coord, R value, object initiator)
         {
-            foreach (var rectangle in Rectangles.Keys)
+            Location.Print(coord + ObjectInRectangles[initiator], Convert(value), this);
+        }
+        protected abstract T Convert(R value);
+
+        public bool Registrated(Coord O, object initiator, Coord[] values)
+        {
+            bool sucsess = true;
+            foreach(var coord in values)
             {
-                rectangle.Close();
+                var currentCoord = coord + O;
+                if (currentCoord.X < 0 || Width <= currentCoord.X || currentCoord.Y < 0 || Height <= currentCoord.Y)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
             }
-            Rectangles = null;
-        }
-
-        public virtual void Load()
-        {
-            foreach (var rectangle in Rectangles.Keys)
+            ObjectInRectangles.Add(initiator, O);
+            foreach (var coord in values)
             {
-                rectangle.Load();
+                var currentCoord = coord + O;
+                if (Values[currentCoord.X, currentCoord.Y] == null)
+                {
+                    Values[currentCoord.X, currentCoord.Y] = initiator;
+                }
+                else
+                {
+                    sucsess = false;
+                }
             }
+            return sucsess;
         }
+    }
+    public class DrawingRectangle<T> : DrawingRectangle<T, T>
+    {
+        public DrawingRectangle(int width, int height, ISecuredPrinter<T> location) : base(width, height, location) { }
 
-        public virtual void Print(Coord coord, T value, ILoadRectangle initiator)
-        {
-            Location.Print(coord + Rectangles[initiator], value, this);
-        }
+        protected override T Convert(T value) => value;
     }
 }

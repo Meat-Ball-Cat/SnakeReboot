@@ -12,10 +12,17 @@ namespace SquareRectangle
         void Load();
         void Close();
     }
-    public interface ILoadRectangle : IRectangle, ILoad { }
+    public interface ICoordPrint<T>
+    {
+        void Print(Coord coord, T value, object initiator);       
+    }
+    public interface ISecuredPrinter<T> : ICoordPrint<T>
+    { 
+        bool Registrated(Coord O, object initiator, Coord[] values);
+    }
     public static class RectangleTools
     {
-        public static bool Intersect(Coord startFirst, ILoadRectangle first, Coord startSecond, ILoadRectangle second)
+        public static bool Intersect(Coord startFirst, IRectangle first, Coord startSecond, IRectangle second)
         {
             var start = startFirst;
             var end = startFirst + (first.Width, first.Height);
@@ -33,12 +40,5 @@ namespace SquareRectangle
             return true;
         }
     }
-    public interface IPrint<T>
-    {
-        void Print(Coord coord, T value, ILoadRectangle initiator);       
-    }
-    public interface IPrintInRectangle<T> : IPrint<T>, ILoadRectangle
-    { 
-        void AddRectangle(Coord start, ILoadRectangle value);
-    }
+
 }

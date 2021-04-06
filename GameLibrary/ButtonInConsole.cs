@@ -1,44 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SquareRectangle;
 
 namespace GameLibrary
 {
     namespace MenuLibrary
     {
-        public class ButtonInConsole : IButton, ILoadRectangle
-        {
-            public ButtonInConsole(int width, int height, IPrintInRectangle<SignConsole> location)
-            {
-                Width = width;
-                Height = height;
-                Location = location;
-            }
+        //public class ButtonInConsole : Rectangle<SignConsole>, IButton
+        //{
+        //    public ButtonInConsole(int width, int height, Rectangle<SignConsole> location) : base(width, height, location) { }
 
-            public int Width { get; }
+        //    public event Action IsPressed;
+        //    public SignConsole[] Value { get; }
 
-            public int Height { get; }
-            public IPrintInRectangle<SignConsole> Location { get; }
+        //    public void IsCurrent()
+        //    {
+        //        throw new NotImplementedException();
+        //    }
 
-            public event Action IsPressed;
-
-            public void Close()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Load()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Press()
-            {
-                IsPressed?.Invoke();
-            }
-        }
+        //    public void NotCurrent()
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //    public override void Load()
+        //    {
+        //        for (int i = 0; i < Value.Length; i++)
+        //        {
+        //            var number = 1 + i;
+        //            if (number / Width <= Height)
+        //            {
+        //                Location.Print((number % Width, number / Width), Value[i], this);
+        //            }
+        //        }
+        //    }
+        //    public override void Close()
+        //    {
+        //        for(int i = 0; i < Width; i++)
+        //        {
+        //            for(int j = 0; j < Height; j++)
+        //            {
+        //                Location.Print((i, j), new SignConsole(' ' , ConsoleColor.Black), this);
+        //            }
+        //        }
+        //    }
+        //    public void Press()
+        //    {
+        //        IsPressed?.Invoke();
+        //    }
+        //}
     }
 }

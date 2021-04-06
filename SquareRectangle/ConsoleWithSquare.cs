@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ToolsLibrary;
 
 namespace SquareRectangle
 {
-    public class ConsoleWithSquare : IPrintInRectangle<SignConsole>
+    public class ConsoleWithSquare : Rectangle, ISecuredPrinter<SignConsole>
     {
         private static ConsoleWithSquare Value;
-        public int Width { get; }
-        public int Height { get; }
-        Dictionary<ILoadRectangle, Coord> Rectangles;
-        private ConsoleWithSquare()
+        Dictionary<object, Coord> Objects { get; }
+        private ConsoleWithSquare() : base(Console.WindowWidth / 2, Console.WindowHeight)
         {
-            Width = Console.WindowWidth / 2;
-            Height = Console.WindowHeight;
             Value = this;
-            Rectangles = new Dictionary<ILoadRectangle, Coord>();
+            Objects = new Dictionary<object, Coord>();
         }
         public static ConsoleWithSquare CreateConsoleWithSquare()
         {
@@ -28,44 +21,21 @@ namespace SquareRectangle
             }
             return Value;
         }
-        public void AddRectangle(Coord start, ILoadRectangle value)
+        public void Print(Coord coord, SignConsole sign, object initiator)
         {
-            if(start.X + value.Width <= Width && start.Y + value.Height <= Height)
+            if (Objects.ContainsKey(initiator))
             {
-                Rectangles.Add(value, start);
-            }
-            else
-            {
-                throw new Exception("Невозможные координаты вписываемого прямоугольника");
-            }            
-        }
-        public void Print(Coord coord, SignConsole sign, ILoadRectangle initiator)
-        {
-            if (Rectangles.ContainsKey(initiator))
-            {
-                coord += Rectangles[initiator];
+                coord += Objects[initiator];
                 Console.SetCursorPosition(coord.X * 2, coord.Y);
                 Console.BackgroundColor = sign.BackColor;
                 Console.Write("" + sign.FirstLetter + sign.SecondLetter);
             }
         }
 
-        public void Load()
+        public bool Registrated(Coord O, object initiator, Coord[] values = null)
         {
-            foreach(var rectangle in Rectangles.Keys)
-            {
-                rectangle.Load();
-            }
-        }
-
-        public void Close()
-        {
-            foreach (var rectangle in Rectangles.Keys)
-            {
-                rectangle.Close();
-            }
-            Rectangles = null;
-            Console.Clear();
+            Objects.Add(initiator, O);
+            return true;
         }
     }
 }
