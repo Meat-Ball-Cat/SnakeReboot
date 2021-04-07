@@ -13,8 +13,6 @@ namespace GameLibrary
         {
             event Action IsPressed;
             void Press();
-            void IsCurrent();
-            void NotCurrent();
         }
     }
 }

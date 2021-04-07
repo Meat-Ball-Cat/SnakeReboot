@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SquareRectangle;
-using System.Threading.Tasks;
 
 namespace GameLibrary
 {
     namespace MenuLibrary
     {
+        public delegate void ChangeButton<T>(T last, T now) where T : IButton;
         public class KeyboardMenu<T> where T : IButton
         {
             public string Name { get; }
             public LinkedList<T> Buttons { get; }
             public LinkedListNode<T> CurrentButton { get; set; }
             bool Curcule { get; set; }
+            public event ChangeButton<T> ChangeButton;
             public KeyboardMenu(string name, bool curcule = false)
             {
                 Buttons = new LinkedList<T>();
@@ -24,7 +22,7 @@ namespace GameLibrary
             public void Press() => CurrentButton?.Value.Press();
             public void Next()
             {
-                CurrentButton.Value.NotCurrent();
+                var last = CurrentButton.Value;
                 if (CurrentButton.Next != null)
                 {                   
                     CurrentButton = CurrentButton.Next;   
@@ -33,12 +31,12 @@ namespace GameLibrary
                 {
                     CurrentButton = CurrentButton.List.First;
                 }
-                CurrentButton.Value.IsCurrent();
+                ChangeButton.Invoke(last, CurrentButton.Value);
             }
             public void Previous()
             {
-                CurrentButton.Value.NotCurrent();
-                if (CurrentButton.Previous != null && Curcule)
+                var last = CurrentButton.Value;
+                if (CurrentButton.Previous != null)
                 {
                     CurrentButton = CurrentButton.Previous;
                 }
@@ -46,11 +44,12 @@ namespace GameLibrary
                 {
                     CurrentButton = CurrentButton.List.Last;
                 }
-                CurrentButton.Value.IsCurrent();
+                ChangeButton.Invoke(last, CurrentButton.Value);
             }
             public void AddLastButton(T button)
             {
                 Buttons.AddLast(button);
+                CurrentButton = Buttons.First;
             }
 
         }

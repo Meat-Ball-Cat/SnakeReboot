@@ -43,8 +43,8 @@ namespace SquareRectangle
             ObjectInRectangles = new Dictionary<object, Coord>();
             Values = new object[Width, Height];
         }
-        Dictionary<object, Coord> ObjectInRectangles { get; set; }
-        object[,] Values { get; }
+        protected Dictionary<object, Coord> ObjectInRectangles { get; set; }
+        protected object[,] Values { get; }
         public override void Close()
         {
             foreach (var rectangle in ObjectInRectangles.Keys)
@@ -95,7 +95,7 @@ namespace SquareRectangle
     }
     public class DrawingRectangle<T> : DrawingRectangle<T, T>
     {
-        public DrawingRectangle(int width, int height, ISecuredPrinter<T> location) : base(width, height, location) { }
+        public DrawingRectangle(int width, int height, ICoordPrint<T> location) : base(width, height, location) { }
 
         protected override T Convert(T value) => value;
     }

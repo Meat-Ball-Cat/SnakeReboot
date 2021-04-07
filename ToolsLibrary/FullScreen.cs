@@ -23,6 +23,7 @@ namespace ToolsLibrary
             DllImports.SetConsoleDisplayMode(ThisConsole, 1, out xy);
 
             Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight + 1);
+            Console.CursorVisible = false;
         }
     }
 }
