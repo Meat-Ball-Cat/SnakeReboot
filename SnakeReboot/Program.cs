@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SquareRectangle;
 using GameLibrary;
-using SquareRectangle;
 using TolsLibrary;
-using GameLibrary.MenuLibrary;
+using System;
 
 namespace SnakeReboot
 {
@@ -16,32 +11,44 @@ namespace SnakeReboot
         {
             ToolsLibrary.FullScreen.FullScreenOn();
             var square = ConsoleWithSquare.CreateConsoleWithSquare();
+            var ch = new Letters("First");
+           
+            ch.Add(new PixelLetter('A', new bool[] { false,  true,  true,  true, false,
+                                                       true, false, false, false,  true,
+                                                       true,  true,  true,  true,  true,
+                                                       true, false, false, false,  true,
+                                                       true, false, false, false,  true,}));
+            var r = new DrawingRectangle<SignConsole>(square.Width, square.Height - 1, square);
+            var sq = new BigPixelPrint(r.Width, r.Height, r, ch);
+            square.Registrated((0, 1), r, r.GetCoord());
+            r.Registrated((0, 0), sq, sq.GetCoord());
+            sq.Print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             KeyPress.Start();
 
             
-            var x = ConsoleWithSquare.CreateConsoleWithSquare();
-            var m = new ManagerConsoleSquare(x.Width - 1, x.Height - 1, x);
-            x.Registrated((1, 1), m, m.GetCoord().Select(t => t + (1, 1)).ToArray());
+            //var x = ConsoleWithSquare.CreateConsoleWithSquare();
+            //var m = new ManagerConsoleSquare(x.Width - 1, x.Height - 1, x);
+            //x.Registrated((1, 1), m, m.GetCoord().Select(t => t + (1, 1)).ToArray());
 
-            var menu = new KeyboardMenu<ButtonInConsole>("menu");
-            var menuPrinter = new ConsolePrintMenu(m.Width, m.Height, m, menu);
-            m.Registrated((0, 0), menuPrinter, menuPrinter.GetCoord());
-            var b1 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_1"));
-            var b2 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_2"));
-            var b3 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_3"));
-            menuPrinter.Registrated((1, 5), b1, b1.GetCoord());
-            menuPrinter.Registrated((1, 7), b2, b2.GetCoord());
-            menuPrinter.Registrated((1, 10), b3, b3.GetCoord());
-            menu.AddLastButton(b1);
-            menu.AddLastButton(b2);
-            menu.AddLastButton(b3);
-            menuPrinter.Load();
-            KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
-            KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
-            KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
-            b1.IsPressed += () => Console.Beep(700, 100);
-            b2.IsPressed += () => Console.Beep(1000, 1000);
-            b3.IsPressed += () => Console.Beep(500, 500);
+            //var menu = new KeyboardMenu<ButtonInConsole>("menu");
+            //var menuPrinter = new ConsolePrintMenu(m.Width, m.Height, m, menu);
+            //m.Registrated((0, 0), menuPrinter, menuPrinter.GetCoord());
+            //var b1 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_1"));
+            //var b2 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_2"));
+            //var b3 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_3"));
+            //menuPrinter.Registrated((2, 5), b1, b1.GetCoord());
+            //menuPrinter.Registrated((2, 7), b2, b2.GetCoord());
+            //menuPrinter.Registrated((2, 10), b3, b3.GetCoord());
+            //menu.AddLastButton(b1);
+            //menu.AddLastButton(b2);
+            //menu.AddLastButton(b3);
+            //menuPrinter.Load();
+            //KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
+            //KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
+            //KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
+            //b1.IsPressed += () => Console.Beep(700, 100);
+            //b2.IsPressed += () => Console.Beep(1000, 1000);
+            //b3.IsPressed += () => Console.Beep(500, 500);
 
 
             //    var d = new Dictionary<GamesSquareValues, SignConsole>();
@@ -76,7 +83,7 @@ namespace SnakeReboot
             //    KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => snake.Down());
             //    KeyPress.Set(ConsoleKey.LeftArrow, (obj, ar) => snake.Left());
             //    KeyPress.Set(ConsoleKey.RightArrow, (obj, ar) => snake.Right());
-            KeyPress.Set(ConsoleKey.Escape, (obj, ar) => { menuPrinter.Close(); KeyPress.Close(); });
+            KeyPress.Set(ConsoleKey.Escape, (obj, ar) => {  KeyPress.Close(); });
 
 
 

@@ -62,6 +62,8 @@ namespace SquareRectangle
         }
         public virtual void Print(Coord coord, R value, object initiator)
         {
+            coord += ObjectInRectangles[initiator];
+            if(Values[coord.X, coord.Y] == initiator)
             Location.Print(coord + ObjectInRectangles[initiator], Convert(value), this);
         }
         protected abstract T Convert(R value);
