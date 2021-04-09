@@ -64,7 +64,7 @@ namespace SquareRectangle
         {
             coord += ObjectInRectangles[initiator];
             if(Values[coord.X, coord.Y] == initiator)
-            Location.Print(coord + ObjectInRectangles[initiator], Convert(value), this);
+            Location.Print(coord, Convert(value), this);
         }
         protected abstract T Convert(R value);
 
@@ -100,5 +100,10 @@ namespace SquareRectangle
         public DrawingRectangle(int width, int height, ICoordPrint<T> location) : base(width, height, location) { }
 
         protected override T Convert(T value) => value;
+    }
+    public interface IWriter
+    {
+        void WriteLine(string value);
+        int Length { get; }
     }
 }

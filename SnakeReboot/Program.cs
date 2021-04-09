@@ -2,6 +2,8 @@
 using GameLibrary;
 using TolsLibrary;
 using System;
+using System.Linq;
+using GameLibrary.MenuLibrary;
 
 namespace SnakeReboot
 {
@@ -12,20 +14,19 @@ namespace SnakeReboot
             ToolsLibrary.FullScreen.FullScreenOn();
             var square = ConsoleWithSquare.CreateConsoleWithSquare();
             var ch = new Letters("First");
-           
-            ch.Add(new PixelLetter('A', new bool[] { false,  true,  true,  true, false,
-                                                       true, false, false, false,  true,
-                                                       true,  true,  true,  true,  true,
-                                                       true, false, false, false,  true,
-                                                       true, false, false, false,  true,}));
-            var r = new DrawingRectangle<SignConsole>(square.Width, square.Height - 1, square);
+
+            var r = new DrawingRectangle<SignConsole>(12, 5, square);
             var sq = new BigPixelPrint(r.Width, r.Height, r, ch);
             square.Registrated((0, 1), r, r.GetCoord());
             r.Registrated((0, 0), sq, sq.GetCoord());
-            sq.Print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            KeyPress.Start();
+            var sc = new Score(sq);
 
-            
+            KeyPress.Start();
+            KeyPress.Set(ConsoleKey.Add, (obj, ar) => { sc.Add(); });
+            KeyPress.Set(ConsoleKey.Multiply, (obj, ar) => { sc.Add(5); });
+
+
+
             //var x = ConsoleWithSquare.CreateConsoleWithSquare();
             //var m = new ManagerConsoleSquare(x.Width - 1, x.Height - 1, x);
             //x.Registrated((1, 1), m, m.GetCoord().Select(t => t + (1, 1)).ToArray());

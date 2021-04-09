@@ -4,10 +4,10 @@ using ToolsLibrary;
 
 namespace GameLibrary
 {
-    public class BigPixelPrint : DrawnRectangle<SignConsole>
+    public class BigPixelPrint : DrawnRectangle<SignConsole>, IWriter
     {
         Letters Library { get; }
-        int Length { get; }
+        public int Length { get; }
         public BigPixelPrint(int width, int height, ICoordPrint<SignConsole> location, Letters library) : base(width, height, location)
         {
             if(Height < 5 || Width < 5)
@@ -29,8 +29,9 @@ namespace GameLibrary
                 }
             }
         }
-        public void Print(string str)
+        public void WriteLine(string str)
         {
+            str = str.ToUpper();
             for(int i = 0; i < Math.Min(str.Length, Length); i++)
             {
                 PrintChar(str[i], i);

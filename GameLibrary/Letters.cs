@@ -2,18 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GameLibrary
 {
     [Serializable]
-
     public class Letters
     {
         static List<string> Names { get; }
         static Letters()
         {
-            using (var input = new FileStream($"data_Name", FileMode.OpenOrCreate))
+            using (var input = new FileStream($"data_Name", FileMode.Open))
             {
                 if (input.Length != 0)
                 {
@@ -40,48 +40,53 @@ namespace GameLibrary
                 Names.Add(name);
             }
             using (var input = new FileStream($"data{name}", FileMode.OpenOrCreate))
-            {
-                
-                if (input.Length != 0)
+            {              
+                while (input.Position != input.Length)
                 {
-                    PixelLetter value;
                     var form = new BinaryFormatter();
-
-                    while ((value = (PixelLetter)form.Deserialize(input)) != null)
+                    var value = form.Deserialize(input);
+                    if (value.GetType() == typeof(KeyValuePair<char, bool[]>))
                     {
-                        ValuePairs.Add(value.Letter, value.Values);
+                        var key = (KeyValuePair<char, bool[]>)value;
+                        ValuePairs.Add(key.Key, key.Value);
                     }
+                    
                 }
             }
         }
         public void Add(PixelLetter pixelLetter)
         {
-            ValuePairs.Add(pixelLetter.Letter, pixelLetter.Values);
+            if (!ValuePairs.ContainsKey(pixelLetter.Letter))
+            {
+                ValuePairs.Add(pixelLetter.Letter, pixelLetter.Values);
+            }          
         }
-        public void Remove(PixelLetter letter)
+        public void Remove(char value)
         {
-            ValuePairs.Remove(letter.Letter);
+            if (ValuePairs.ContainsKey(value))
+            {
+                ValuePairs.Remove(value);
+            }
         }
         public void Save()
         {
             using (var input = new FileStream($"data{Name}", FileMode.Create))
             {
                 var form = new BinaryFormatter();
-                foreach(var pix in ValuePairs)
-                {
-                    form.Serialize(input, pix);
-                }
+                foreach(var value in ValuePairs)
+                form.Serialize(input, value);
             }
         }
         public static void AllSave()
         {
-            using (var input = new FileStream($"data", FileMode.Create))
+            using (var input = new FileStream($"data_Name", FileMode.Create))
             {
                 var form = new BinaryFormatter();
                 form.Serialize(input, Names);
             }
         }
     }
+    [Serializable]
     public class PixelLetter
     {
         public char Letter { get; }
