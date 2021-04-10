@@ -34,7 +34,8 @@ namespace SquareRectangle
             Location = location ?? throw new ArgumentNullException();
         }
         public abstract void Load();
-        public abstract void Close();      
+        public abstract void Close();
+        public abstract void Hide();
     }
     public abstract class DrawingRectangle<T, R> : DrawnRectangle<T>, ISecuredPrinter<R>
     {
@@ -47,11 +48,14 @@ namespace SquareRectangle
         protected object[,] Values { get; }
         public override void Close()
         {
-            foreach (var rectangle in ObjectInRectangles.Keys)
+            if (ObjectInRectangles != null)
             {
-                ((ILoad)rectangle).Close();
+                foreach (var rectangle in ObjectInRectangles.Keys)
+                {
+                    ((ILoad)rectangle).Close();
+                }
+                ObjectInRectangles = null;
             }
-            ObjectInRectangles = null;
         }
         public override void Load()
         {
@@ -60,12 +64,20 @@ namespace SquareRectangle
                 ((ILoad)rectangle).Load();
             }
         }
+        public override void Hide()
+        {
+            foreach (var rectangle in ObjectInRectangles.Keys)
+            {
+                ((ILoad)rectangle).Hide();
+            }
+        }
         public virtual void Print(Coord coord, R value, object initiator)
         {
             coord += ObjectInRectangles[initiator];
             if(Values[coord.X, coord.Y] == initiator)
             Location.Print(coord, Convert(value), this);
         }
+
         protected abstract T Convert(R value);
 
         public bool Registrated(Coord O, object initiator, Coord[] values)
@@ -94,6 +106,19 @@ namespace SquareRectangle
             }
             return sucsess;
         }
+        public void Unregistrated(object initiator)
+        {
+            for(int i = 0; i < Width; i++)
+            {
+                for(int j = 0; j < Height; j++)
+                {
+                    if(Values[i, j] == initiator)
+                    {
+                        Values[i, j] = null;
+                    }
+                }
+            }
+        }
     }
     public class DrawingRectangle<T> : DrawingRectangle<T, T>
     {
@@ -101,9 +126,5 @@ namespace SquareRectangle
 
         protected override T Convert(T value) => value;
     }
-    public interface IWriter
-    {
-        void WriteLine(string value);
-        int Length { get; }
-    }
+
 }

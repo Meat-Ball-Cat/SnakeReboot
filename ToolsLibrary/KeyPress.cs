@@ -26,7 +26,7 @@ namespace TolsLibrary
             {
                 var PressedKey = Console.ReadKey(true);
                 keyPressEvent.TryGetValue(PressedKey.Key, out var keyEventHandler);
-                keyEventHandler?.Invoke(PressedKey, new EventArgs());
+                keyEventHandler?.BeginInvoke(PressedKey, new EventArgs(), null, null);
             }
         }
         public static bool Set(ConsoleKey keyValue, EventHandler action)
@@ -40,7 +40,7 @@ namespace TolsLibrary
                 }
                 else
                 {
-                    return Reset(keyValue, action);
+                    return false;
                 }
             }
             catch
@@ -54,6 +54,18 @@ namespace TolsLibrary
             {
                 keyPressEvent.Remove(keyValue);
                 keyPressEvent.Add(keyValue, action);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+        public static bool Remove(ConsoleKey key)
+        {
+            try
+            {
+                keyPressEvent.Remove(key);
             }
             catch
             {

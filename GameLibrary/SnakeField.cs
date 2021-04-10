@@ -58,7 +58,23 @@ namespace GameLibrary
                 {
                     for (int j = 0; j < Height; j++)
                     {
-                        ChangeCell((i, j), GamesSquareValues.nothing);
+                        if (Value[i, j] != GamesSquareValues.nothing)
+                        {
+                             ChangeCell((i, j), GamesSquareValues.nothing);
+                        }                        
+                    }
+                }
+            }
+            public override void Hide()
+            {
+                for (int i = 0; i < Width; i++)
+                {
+                    for (int j = 0; j < Height; j++)
+                    {
+                        if (Value[i, j] != GamesSquareValues.nothing)
+                        {
+                            Location.Print((i, j), GamesSquareValues.nothing, this);
+                        }
                     }
                 }
             }

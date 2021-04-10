@@ -4,6 +4,8 @@ using TolsLibrary;
 using System;
 using System.Linq;
 using GameLibrary.MenuLibrary;
+using System.Collections.Generic;
+using GameLibrary.SnakeGame;
 
 namespace SnakeReboot
 {
@@ -11,102 +13,169 @@ namespace SnakeReboot
     {
         static void Main(string[] args)
         {
+            GameStart();
+        }
+
+        static void GameStart()
+        {
             ToolsLibrary.FullScreen.FullScreenOn();
-            var square = ConsoleWithSquare.CreateConsoleWithSquare();
-            var ch = new Letters("First");
-
-            var r = new DrawingRectangle<SignConsole>(12, 5, square);
-            var sq = new BigPixelPrint(r.Width, r.Height, r, ch);
-            square.Registrated((0, 1), r, r.GetCoord());
-            r.Registrated((0, 0), sq, sq.GetCoord());
-            var sc = new Score(sq);
-
             KeyPress.Start();
-            KeyPress.Set(ConsoleKey.Add, (obj, ar) => { sc.Add(); });
-            KeyPress.Set(ConsoleKey.Multiply, (obj, ar) => { sc.Add(5); });
+            var square = ConsoleWithSquare.CreateConsoleWithSquare();
+            var manager = new ManagerConsoleSquare(square.Width, square.Height, square);
+            square.Registrated((0, 0), manager, manager.GetCoord());
+            var bigChar = new Letters("First");
+            CreateStartMeni(manager, bigChar);
+        }
+
+        static void CreateStartMeni(ManagerConsoleSquare location, Letters letetrs)
+        {
+            var menu = new KeyboardMenu<ButtonInConsole>("menu");
+            var menuPrinter = new ConsolePrintMenu(location.Width, location.Height, location, menu);
+            location.Registrated((0, 0), menuPrinter, menuPrinter.GetCoord());
+            var printer = new BigPixelPrint(menuPrinter.Width, 5, menuPrinter, letetrs);
+            menuPrinter.Registrated((0, 1), printer, printer.GetCoord());
+            menuPrinter.SetWriter(printer);
+
+            var b1 = new ButtonInConsole(menuPrinter.Width - 10, 1, menuPrinter, SignConsole.GetSignConsoles("Snake start"));
+            var b2 = new ButtonInConsole(menuPrinter.Width - 10, 1, menuPrinter, SignConsole.GetSignConsoles("Settings"));
+            var b3 = new ButtonInConsole(menuPrinter.Width - 10, 1, menuPrinter, SignConsole.GetSignConsoles("Exit"));
+            menuPrinter.Registrated((5, 8), b1, b1.GetCoord());
+            menuPrinter.Registrated((5, 10), b2, b2.GetCoord());
+            menuPrinter.Registrated((5, 12), b3, b3.GetCoord());
+            menu.AddLastButton(b1);
+            b1.IsPressed += () =>
+            {
+                menuPrinter.Hide();
+                KeyPress.Remove(ConsoleKey.DownArrow);
+                KeyPress.Remove(ConsoleKey.UpArrow);
+                KeyPress.Remove(ConsoleKey.Enter);
+                void act()
+                {
+                    menuPrinter.Load();
+                    KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
+                    KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
+                    KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
+                }
+                SnakeMenuLoad(location, letetrs, act);
+                
+            };
+            menu.AddLastButton(b2);
+            b2.IsPressed += () => Console.Beep(1000, 500);
+            menu.AddLastButton(b3);
+            b3.IsPressed += () => { 
+                menuPrinter.Close();
+                location.Unregistrated(menuPrinter);
+                KeyPress.Remove(ConsoleKey.DownArrow);
+                KeyPress.Remove(ConsoleKey.UpArrow);
+                KeyPress.Remove(ConsoleKey.Enter);
+                KeyPress.Close();
+                return;
+            };
+
+            menuPrinter.Load();
+
+            KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
+            KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
+            KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
+
+        }
+
+        private static void SnakeMenuLoad(ManagerConsoleSquare location, Letters letetrs, Action startWithClose)
+        {
+            var menu = new KeyboardMenu<ButtonInConsole>("Snake");
+            var snakeMenu = new ConsolePrintMenu(location.Width, location.Height, location, menu);
+            location.Registrated((0, 0), snakeMenu, snakeMenu.GetCoord());
+            var printer = new BigPixelPrint(snakeMenu.Width, 5, snakeMenu, letetrs);
+            snakeMenu.Registrated((0, 1), printer, printer.GetCoord());
+            snakeMenu.SetWriter(printer);
+
+            var b1 = new ButtonInConsole(snakeMenu.Width - 10, 1, snakeMenu, SignConsole.GetSignConsoles("Start"));
+            var b2 = new ButtonInConsole(snakeMenu.Width - 10, 1, snakeMenu, SignConsole.GetSignConsoles("Mode"));
+            var b3 = new ButtonInConsole(snakeMenu.Width - 10, 1, snakeMenu, SignConsole.GetSignConsoles("Settings"));
+            var b4 = new ButtonInConsole(snakeMenu.Width - 10, 1, snakeMenu, SignConsole.GetSignConsoles("Exit"));
+            snakeMenu.Registrated((5, 8), b1, b1.GetCoord());
+            snakeMenu.Registrated((5, 10), b2, b2.GetCoord());
+            snakeMenu.Registrated((5, 12), b3, b3.GetCoord());
+            snakeMenu.Registrated((5, 14), b4, b4.GetCoord());
+            menu.AddLastButton(b1);
+            b1.IsPressed += () =>
+            {
+                snakeMenu.Hide();
+                KeyPress.Remove(ConsoleKey.DownArrow);
+                KeyPress.Remove(ConsoleKey.UpArrow);
+                KeyPress.Remove(ConsoleKey.Enter);
+                SnakeStart(location);
+                KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
+                KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
+                KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
+                snakeMenu.Load();
+            };
+            menu.AddLastButton(b2);
+            b2.IsPressed += () => Console.Beep(500, 500);
+            menu.AddLastButton(b3);
+            b3.IsPressed += () => Console.Beep(1000, 500);
+            menu.AddLastButton(b4);
+            b4.IsPressed += () => {
+                snakeMenu.Close();
+                location.Unregistrated(snakeMenu);
+                KeyPress.Remove(ConsoleKey.DownArrow);
+                KeyPress.Remove(ConsoleKey.UpArrow);
+                KeyPress.Remove(ConsoleKey.Enter);
+                startWithClose?.Invoke();
+            };
+
+            snakeMenu.Load();
+            KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
+            KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
+            KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
+        }
+        static void SnakeStart(ManagerConsoleSquare location)
+        {
+            var GameDictionary = new Dictionary<GamesSquareValues, SignConsole>
+            {
+                { GamesSquareValues.snake, new SignConsole(' ', ConsoleColor.White) },
+                { GamesSquareValues.snakeBerry, new SignConsole(' ', ConsoleColor.Red) },
+                { GamesSquareValues.snakeWall, new SignConsole('X', ConsoleColor.Black) },
+                { GamesSquareValues.nothing, new SignConsole(' ', ConsoleColor.Black) }
+            };
+            var gameField = new ConsoleGameField(location.Width, location.Height, location, GameDictionary);
+            location.Registrated((0, 0), gameField, gameField.GetCoord());
+
+            var snakeMove = new GameLibrary.SnakeGame.SnakeMove(250);
+
+            var snakeField = new SnakeField(gameField.Width, gameField.Height - 5, gameField);
+            gameField.Registrated((0, 5), snakeField, snakeField.GetCoord());
+            snakeField.Inicializated();
+            var bigChar = new Letters("First");
+            var scoreField = new BigPixelPrint(18, 5, location, bigChar);
+            location.Registrated((location.Width / 2 - 9, 0), scoreField, scoreField.GetCoord());
+            var score = new Score(scoreField); 
 
 
+            var snake = new Snake(snakeField);
+            Berry.RandomBerry(snakeField);
 
-            //var x = ConsoleWithSquare.CreateConsoleWithSquare();
-            //var m = new ManagerConsoleSquare(x.Width - 1, x.Height - 1, x);
-            //x.Registrated((1, 1), m, m.GetCoord().Select(t => t + (1, 1)).ToArray());
+            snake.IsEat += (Snake) => Berry.RandomBerry(Snake.Location);
+            snake.IsEat += (Snake) => snakeMove.Acceleration(0.9);
+            snake.IsEat += (Snake) => score.Add();
+            snake.Die += (Snake) => snakeMove.Stop();
+            snakeMove.Add(snake.Move);
 
-            //var menu = new KeyboardMenu<ButtonInConsole>("menu");
-            //var menuPrinter = new ConsolePrintMenu(m.Width, m.Height, m, menu);
-            //m.Registrated((0, 0), menuPrinter, menuPrinter.GetCoord());
-            //var b1 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_1"));
-            //var b2 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_2"));
-            //var b3 = new ButtonInConsole(menuPrinter.Width - 2, 1, menuPrinter, SignConsole.GetSignConsoles("Button_3"));
-            //menuPrinter.Registrated((2, 5), b1, b1.GetCoord());
-            //menuPrinter.Registrated((2, 7), b2, b2.GetCoord());
-            //menuPrinter.Registrated((2, 10), b3, b3.GetCoord());
-            //menu.AddLastButton(b1);
-            //menu.AddLastButton(b2);
-            //menu.AddLastButton(b3);
-            //menuPrinter.Load();
-            //KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => menu.Next());
-            //KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => menu.Previous());
-            //KeyPress.Set(ConsoleKey.Enter, (obj, ar) => menu.Press());
-            //b1.IsPressed += () => Console.Beep(700, 100);
-            //b2.IsPressed += () => Console.Beep(1000, 1000);
-            //b3.IsPressed += () => Console.Beep(500, 500);
+            KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => snake.Up());
+            KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => snake.Down());
+            KeyPress.Set(ConsoleKey.LeftArrow, (obj, ar) => snake.Left());
+            KeyPress.Set(ConsoleKey.RightArrow, (obj, ar) => snake.Right());
 
-
-            //    var d = new Dictionary<GamesSquareValues, SignConsole>();
-            //    d.Add(GamesSquareValues.snake, new SignConsole(' ', ConsoleColor.White));
-            //    d.Add(GamesSquareValues.snakeBerry, new SignConsole(' ', ConsoleColor.Red));
-            //    d.Add(GamesSquareValues.snakeWall, new SignConsole('X', ConsoleColor.Black));
-            //    d.Add(GamesSquareValues.nothing, new SignConsole(' ', ConsoleColor.Black));
-            //    var y = new ConsoleGameField(x.Width, x.Height, x, d);
-            //    x.Registrated((0, 0), y);
-
-            //    var snakeMove = new GameLibrary.SnakeGame.SnakeMove(250);
-
-            //    Console.CursorVisible = false;
-            //    var sf = new GameLibrary.SnakeGame.SnakeField(y.Width, y.Height, y);
-            //    y.Registrated((0, 0), sf, sf.GetCoord());
-            //    sf.Inicializated();
-
-
-            //    var snake = new GameLibrary.SnakeGame.Snake(sf);
-            //    GameLibrary.SnakeGame.Berry.RandomBerry(sf);
-            //    //var python = new Snake(myField, new coord(myField.Width / 3, myField.Height / 2), Direction.direction.down);
-
-            //    snake.IsEat += (Snake) => GameLibrary.SnakeGame.Berry.RandomBerry(Snake.Location);
-            //    snake.IsEat += (Snake) => snakeMove.Acceleration(0.9);
-            //    //snake.IsEat += (Snake) => score.Add();
-            //    snake.Die += (Snake) => snakeMove.Stop();
-            //    snakeMove.Add(snake.Move);
-
-            //    #region snake control
-            //    KeyPress.Start();
-            //    KeyPress.Set(ConsoleKey.UpArrow, (obj, ar) => snake.Up());
-            //    KeyPress.Set(ConsoleKey.DownArrow, (obj, ar) => snake.Down());
-            //    KeyPress.Set(ConsoleKey.LeftArrow, (obj, ar) => snake.Left());
-            //    KeyPress.Set(ConsoleKey.RightArrow, (obj, ar) => snake.Right());
-            KeyPress.Set(ConsoleKey.Escape, (obj, ar) => {  KeyPress.Close(); });
-
-
-
-            //    //control.Add(new aaaa(ConsoleKey.W, python.ChangeDirection, Direction.direction.up));
-            //    //control.Add(new aaaa(ConsoleKey.S, python.ChangeDirection, Direction.direction.down));
-            //    //control.Add(new aaaa(ConsoleKey.A, python.ChangeDirection, Direction.direction.left));
-            //    //control.Add(new aaaa(ConsoleKey.D, python.ChangeDirection, Direction.direction.right));
-            //    #endregion
-
-            //    try
-            //    {
-            //        snakeMove.Start();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine(ex.Message);
-            //    }
-            //    finally
-            //    {
-            //        KeyPress.Close();
-            //        Console.SetCursorPosition(Console.WindowWidth / 2 - 22, Console.WindowHeight / 2 + 1);
-            //    }
+            snakeMove.Start();
+            KeyPress.Remove(ConsoleKey.UpArrow);
+            KeyPress.Remove(ConsoleKey.DownArrow);
+            KeyPress.Remove(ConsoleKey.LeftArrow);
+            KeyPress.Remove(ConsoleKey.RightArrow);
+            Console.ReadKey();
+            gameField.Close();
+            scoreField.Close();
+            
+            location.Unregistrated(gameField);
         }
     }
 }

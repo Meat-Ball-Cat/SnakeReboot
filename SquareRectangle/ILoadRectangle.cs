@@ -11,6 +11,7 @@ namespace SquareRectangle
     {
         void Load();
         void Close();
+        void Hide();
     }
     public interface ICoordPrint<T>
     {
@@ -19,6 +20,12 @@ namespace SquareRectangle
     public interface ISecuredPrinter<T> : ICoordPrint<T>
     { 
         bool Registrated(Coord O, object initiator, Coord[] values);
+        void Unregistrated(object initiator);
+    }
+    public interface IWriter
+    {
+        void WriteLine(string value);
+        int Length { get; }
     }
     public static class RectangleTools
     {

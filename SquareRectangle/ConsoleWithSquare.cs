@@ -27,7 +27,14 @@ namespace SquareRectangle
             {
                 coord += Objects[initiator];
                 Console.SetCursorPosition(coord.X * 2, coord.Y);
-                Console.BackgroundColor = sign.BackColor;
+                if (Console.BackgroundColor != sign.BackColor)
+                {
+                    Console.BackgroundColor = sign.BackColor;
+                }
+                if (Console.ForegroundColor != sign.FrontColor)
+                {
+                    Console.ForegroundColor = sign.FrontColor;
+                }
                 Console.Write("" + sign.FirstLetter + sign.SecondLetter);
             }
         }
@@ -36,6 +43,14 @@ namespace SquareRectangle
         {
             Objects.Add(initiator, O);
             return true;
+        }
+
+        public void Unregistrated(object initiator)
+        {
+            if (Objects.ContainsKey(initiator))
+            {
+                Objects.Remove(initiator);
+            }
         }
     }
 }

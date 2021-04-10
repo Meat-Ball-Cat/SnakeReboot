@@ -7,26 +7,42 @@ namespace GameLibrary
     {
         public class ConsolePrintMenu : DrawingRectangle<SignConsole>
         {
-            public ConsolePrintMenu(int width, int height, ICoordPrint<SignConsole> location, KeyboardMenu<ButtonInConsole> value) : base(width, height, location)
+            public ConsolePrintMenu(int width, int height, ICoordPrint<SignConsole> location, KeyboardMenu<ButtonInConsole> menu) : base(width, height, location)
             {
-                Value = value;
-                value.ChangeButton += ChangeButton;
+                Menu = menu;
+                menu.ChangeButton += ChangeButton;
+            }
+            public void SetWriter(ConsoleWriter writer)
+            {
+                Writer?.Close();
+                Writer = writer;
+                Writer.Load();
             }
 
-            KeyboardMenu<ButtonInConsole> Value { get; }
+            KeyboardMenu<ButtonInConsole> Menu { get; }
             public void ChangeButton(ButtonInConsole last, ButtonInConsole now)
             {
-                Location.Print(ObjectInRectangles[last], new SignConsole(' '), this);
-                Location.Print(ObjectInRectangles[now], new SignConsole('<', '>'), this);
+                RemoveButton(last);
+                SetButton(now);
             }
+            void SetButton(ButtonInConsole button)
+            {
+                button.SetColors(ConsoleColor.White, ConsoleColor.Black);
+            }
+            void RemoveButton(ButtonInConsole button)
+            {
+                button.SetColors(ConsoleColor.Black, ConsoleColor.White);
+            }
+            ConsoleWriter Writer { get; set; }
             public override void Close()
             {
-                foreach (var rectangle in ObjectInRectangles.Keys)
+                if (ObjectInRectangles != null)
                 {
-                    ((ILoad)rectangle).Close();
+                    foreach (var rectangle in ObjectInRectangles.Keys)
+                    {
+                        ((ILoad)rectangle).Close();
+                    }
                 }
-                Location.Print(ObjectInRectangles[Value.CurrentButton.Value], new SignConsole(' '), this);
-                ObjectInRectangles = null;
             }
             public override void Load()
             {
@@ -34,7 +50,8 @@ namespace GameLibrary
                 {
                     ((ILoad)rectangle).Load();
                 }
-                Location.Print(ObjectInRectangles[Value.CurrentButton.Value], new SignConsole('<', '>'), this);
+                Writer?.WriteLine(Menu.Name);
+                SetButton(Menu.CurrentButton.Value);
             }
         }
     }

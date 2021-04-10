@@ -4,10 +4,17 @@ using ToolsLibrary;
 
 namespace GameLibrary
 {
-    public class BigPixelPrint : DrawnRectangle<SignConsole>, IWriter
+    public abstract class ConsoleWriter : DrawnRectangle<SignConsole>, IWriter
+    {
+        public abstract int Length { get; }
+
+        public ConsoleWriter(int width, int height, ICoordPrint<SignConsole> location) : base(width, height, location) { }
+        public abstract void WriteLine(string value);
+    }
+    public class BigPixelPrint : ConsoleWriter
     {
         Letters Library { get; }
-        public int Length { get; }
+        public override int Length { get; }
         public BigPixelPrint(int width, int height, ICoordPrint<SignConsole> location, Letters library) : base(width, height, location)
         {
             if(Height < 5 || Width < 5)
@@ -29,7 +36,7 @@ namespace GameLibrary
                 }
             }
         }
-        public void WriteLine(string str)
+        public override void WriteLine(string str)
         {
             str = str.ToUpper();
             for(int i = 0; i < Math.Min(str.Length, Length); i++)
@@ -38,14 +45,18 @@ namespace GameLibrary
             }
         }
 
-        public override void Load()
-        {
-            throw new NotImplementedException();
-        }
+        public override void Load() { }
 
         public override void Close()
         {
-            throw new NotImplementedException();
+            var nullValue = new string(' ', Length);
+            WriteLine(nullValue);
+        }
+
+        public override void Hide()
+        {
+            var nullValue = new string(' ', Length);
+            WriteLine(nullValue);
         }
     }
 }

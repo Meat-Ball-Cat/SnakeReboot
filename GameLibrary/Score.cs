@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SquareRectangle;
+﻿using SquareRectangle;
 
 namespace GameLibrary
 {
@@ -19,7 +14,7 @@ namespace GameLibrary
                 var str = _val.ToString();
                 if (str.Length > Writer.Length)
                 {
-                    Value = 0;
+                    Value = Value % 100;
                 }
                 else
                 {

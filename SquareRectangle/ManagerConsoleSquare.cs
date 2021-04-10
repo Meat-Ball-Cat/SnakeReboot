@@ -40,7 +40,7 @@ namespace SquareRectangle
             }
             return sucsess;
         }
-        public void RemoveObject(object value)
+        public void Unregistrated(object value)
         {
             if (ObjectInRectangles.ContainsKey(value))
             {
@@ -49,7 +49,7 @@ namespace SquareRectangle
                 {
                     for (int j = 0; j < Height; j++)
                     {
-                        Values[i, j] = new Stack<object>(Values[i, j].Where(x => x != value));
+                        Values[i, j] = new Stack<object>(Values[i, j].Where(x => x != value).Reverse());
                     }
                 }
                 ObjectInRectangles.Remove(value);
@@ -63,7 +63,13 @@ namespace SquareRectangle
                 Location.Print(coord, value, this);
             }
         }
-
+        public override void Hide()
+        {
+            foreach (var rectangle in ObjectInRectangles.Keys)
+            {
+                ((ILoad)rectangle).Hide();
+            }
+        }
         public override void Close()
         {
             foreach (var rectangle in ObjectInRectangles.Keys)

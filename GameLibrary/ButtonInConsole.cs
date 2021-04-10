@@ -19,7 +19,7 @@ namespace GameLibrary
             {
                 for (int i = 0; i < Value.Length; i++)
                 {
-                    var number = 1 + i;
+                    var number = i;
                     if (number / Width <= Height)
                     {
                         Location.Print((number % Width, number / Width), Value[i], this);
@@ -28,17 +28,29 @@ namespace GameLibrary
             }
             public override void Close()
             {
+                Hide();
+            }
+            public override void Hide()
+            {
                 for (int i = 0; i < Width; i++)
                 {
                     for (int j = 0; j < Height; j++)
                     {
-                        Location.Print((i, j), new SignConsole(' ', ConsoleColor.Black), this);
+                        Location.Print((i, j), new SignConsole(' '), this);
                     }
                 }
             }
             public void Press()
             {
                 IsPressed?.Invoke();
+            }
+            public void SetColors(ConsoleColor back, ConsoleColor front)
+            {
+                for(int i = 0; i < Value.Length; i++)
+                {
+                    Value[i] = Value[i].ChangeColor(back, front);
+                }
+                Load();
             }
         }
     }
