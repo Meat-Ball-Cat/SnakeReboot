@@ -1,5 +1,6 @@
 ﻿using System;
 using SquareRectangle;
+using System.Linq;
 
 namespace GameLibrary
 {
@@ -9,20 +10,20 @@ namespace GameLibrary
         {
             public ButtonInConsole(int width, int height, ICoordPrint<SignConsole> location, SignConsole[] value) : base(width, height, location)
             {
-                Value = value;
+                Name = value;
             }
 
             public event Action IsPressed;
-            public SignConsole[] Value { get; }
+            public SignConsole[] Name { get; }
 
             public override void Load()
             {
-                for (int i = 0; i < Value.Length; i++)
+                for (int i = 0; i < Name.Length; i++)
                 {
                     var number = i;
                     if (number / Width <= Height)
                     {
-                        Location.Print((number % Width, number / Width), Value[i], this);
+                        Location.Print((number % Width, number / Width), Name[i], this);
                     }
                 }
             }
@@ -46,9 +47,94 @@ namespace GameLibrary
             }
             public void SetColors(ConsoleColor back, ConsoleColor front)
             {
-                for(int i = 0; i < Value.Length; i++)
+                for(int i = 0; i < Name.Length; i++)
                 {
-                    Value[i] = Value[i].ChangeColor(back, front);
+                    Name[i] = Name[i].ChangeColor(back, front);
+                }
+                Load();
+            }
+        }
+        public class ButtonInConsoleSetter : ButtonInConsole
+        {
+            public ButtonInConsoleSetter(int width, int height, ICoordPrint<SignConsole> location, SignConsole[] name) : base(width, height, location, name) 
+            {
+                Name = name;
+            }
+
+            SignConsole[] _name;
+            public new SignConsole[] Name 
+            {
+                get 
+                {
+                   return _name;
+                }
+                private set
+                {
+                    if (NameLength < value.Length)
+                    {
+                        _name = value.Reverse().Skip(Name.Length - NameLength).Reverse().ToArray();
+                    }
+                    else
+                    {
+                        _name = value;
+                    }
+                }
+            }
+            private int NameLength { get { return Width / 2 + Width % 2; } }
+            private int ValueLength { get { return Width / 2; } }
+            SignConsole[] _value;
+            public SignConsole[] Value
+            {
+                get
+                {
+                    return _value;
+                }
+                set
+                {
+                    if (ValueLength < value.Length)
+                    {
+                        _value = value.Reverse().Skip(Name.Length - NameLength).Reverse().ToArray();
+                        Load();
+                    }
+                    else
+                    {
+                        _value = value;
+                    }
+                }
+            }
+            public override void Close()
+            {
+                Hide();
+                base.Close();
+            }
+
+            public override void Hide()
+            {
+                for(int i = 0; i < Width; i++)
+                {
+                    Location.Print((i, 0), new SignConsole(' '), this);
+                }
+            }
+
+            public override void Load()
+            {
+                for(int i = 0; i < Math.Min(NameLength, Name.Length); i++)
+                {
+                    Location.Print((i, 0), Name[i], this);
+                }
+                if (Value != null)
+                {
+                    for (int i = 0; i < Math.Min(ValueLength, Value.Length); i++)
+                    {
+                        Location.Print((i + NameLength, 0), Value[i], this);
+                    }
+                }
+            }
+            public new void SetColors(ConsoleColor back, ConsoleColor front)
+            {
+                for (int i = 0; i < Name.Length; i++)
+                {
+                    Name[i] = Name[i].ChangeColor(back, front);
                 }
                 Load();
             }
