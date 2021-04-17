@@ -8,7 +8,7 @@ namespace GameLibrary
     {
         public class ButtonInConsole : DrawnRectangle<SignConsole>, IButton
         {
-            public ButtonInConsole(int width, int height, ICoordPrint<SignConsole> location, SignConsole[] value) : base(width, height, location)
+            public ButtonInConsole(int width, int height, IDrawingByCoordinates<SignConsole> location, SignConsole[] value) : base(width, height, location)
             {
                 Name = value;
             }
@@ -23,7 +23,7 @@ namespace GameLibrary
                     var number = i;
                     if (number / Width <= Height)
                     {
-                        Location.Print((number % Width, number / Width), Name[i], this);
+                        Location.Draw((number % Width, number / Width), Name[i], this);
                     }
                 }
             }
@@ -37,7 +37,7 @@ namespace GameLibrary
                 {
                     for (int j = 0; j < Height; j++)
                     {
-                        Location.Print((i, j), new SignConsole(' '), this);
+                        Location.Draw((i, j), new SignConsole(' '), this);
                     }
                 }
             }
@@ -56,7 +56,7 @@ namespace GameLibrary
         }
         public class ButtonInConsoleSetter : ButtonInConsole
         {
-            public ButtonInConsoleSetter(int width, int height, ICoordPrint<SignConsole> location, SignConsole[] name) : base(width, height, location, name) 
+            public ButtonInConsoleSetter(int width, int height, IDrawingByCoordinates<SignConsole> location, SignConsole[] name) : base(width, height, location, name) 
             {
                 Name = name;
             }
@@ -93,13 +93,14 @@ namespace GameLibrary
                 {
                     if (ValueLength < value.Length)
                     {
-                        _value = value.Reverse().Skip(Name.Length - NameLength).Reverse().ToArray();
-                        Load();
+                        _value = value.Reverse().Skip(Name.Length - NameLength).Reverse().ToArray();                       
                     }
                     else
                     {
                         _value = value;
                     }
+                    Hide();
+                    Load();
                 }
             }
             public override void Close()
@@ -112,7 +113,7 @@ namespace GameLibrary
             {
                 for(int i = 0; i < Width; i++)
                 {
-                    Location.Print((i, 0), new SignConsole(' '), this);
+                    Location.Draw((i, 0), new SignConsole(' '), this);
                 }
             }
 
@@ -120,13 +121,13 @@ namespace GameLibrary
             {
                 for(int i = 0; i < Math.Min(NameLength, Name.Length); i++)
                 {
-                    Location.Print((i, 0), Name[i], this);
+                    Location.Draw((i, 0), Name[i], this);
                 }
                 if (Value != null)
                 {
                     for (int i = 0; i < Math.Min(ValueLength, Value.Length); i++)
                     {
-                        Location.Print((i + NameLength, 0), Value[i], this);
+                        Location.Draw((i + NameLength, 0), Value[i], this);
                     }
                 }
             }

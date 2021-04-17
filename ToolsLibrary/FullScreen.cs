@@ -13,13 +13,13 @@ namespace ToolsLibrary
             public static extern bool SetConsoleDisplayMode(
                 IntPtr ConsoleOutput
                 , uint Flags
-                , out Coord NewScreenBufferDimensions
+                , out Coordinates NewScreenBufferDimensions
                 );
         }
         public static void FullScreenOn()
         {
             IntPtr ThisConsole = DllImports.GetStdHandle(-11);
-            Coord xy;
+            Coordinates xy;
             DllImports.SetConsoleDisplayMode(ThisConsole, 1, out xy);
 
             Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight + 1);

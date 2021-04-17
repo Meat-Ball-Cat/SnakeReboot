@@ -13,39 +13,19 @@ namespace SquareRectangle
         void Close();
         void Hide();
     }
-    public interface ICoordPrint<T>
+    public interface IDrawingByCoordinates<T>
     {
-        void Print(Coord coord, T value, object initiator);       
+        void Draw(Coordinates coord, T value, object initiator);       
     }
-    public interface ISecuredPrinter<T> : ICoordPrint<T>
+    public interface ISecuredDrawing<T> : IDrawingByCoordinates<T>
     { 
-        bool Registrated(Coord O, object initiator, Coord[] values);
-        void Unregistrated(object initiator);
+        bool Register(Coordinates O, object initiator, Coordinates[] values);
+        void CancelRegistration(object initiator);
     }
+    public interface IDrawningRectangle<T> : IRectangle, ISecuredDrawing<T> { }
     public interface IWriter
     {
         void WriteLine(string value);
         int Length { get; }
     }
-    public static class RectangleTools
-    {
-        public static bool Intersect(Coord startFirst, IRectangle first, Coord startSecond, IRectangle second)
-        {
-            var start = startFirst;
-            var end = startFirst + (first.Width, first.Height);
-            for (int i = 0; i < second.Width; i++)
-            {
-                for (int j = 0; j < second.Height; j++)
-                {
-                    var currentCoord = startSecond + (i, j);
-                    if ((start.X <= currentCoord.X && currentCoord.X < end.X) && (start.Y <= currentCoord.Y && currentCoord.Y < end.Y))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-    }
-
 }

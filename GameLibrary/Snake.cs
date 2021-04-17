@@ -27,24 +27,24 @@ namespace GameLibrary
         public class Snake
         {
             public SnakeField Location { get; }
-            List<Coord> Body { get; }
+            List<Coordinates> Body { get; }
             bool Controbility { get; set; }
             Direction.direction NowDirection { get; set; }
             Direction.direction NextDirection { get; set; }
             public event Action<Snake> IsEat;
             public event Action<Snake> Die = (Snake) => Snake.IsDie();
             public bool Alife { get; private set; } = true;
-            public Coord Head { get { return Body[0]; } }
+            public Coordinates Head { get { return Body[0]; } }
 
-            public Snake(SnakeField location, Coord startCoord, Direction.direction startDirection)
+            public Snake(SnakeField location, Coordinates startCoord, Direction.direction startDirection)
             {
                 Location = location;
                 NowDirection = startDirection;
                 NextDirection = startDirection;
-                Body = new List<Coord>();
+                Body = new List<Coordinates>();
                 Add(startCoord);
             }
-            public Snake(SnakeField location) : this(location, new Coord(location.Width / 2, location.Height / 2), Direction.direction.up) { }
+            public Snake(SnakeField location) : this(location, new Coordinates(location.Width / 2, location.Height / 2), Direction.direction.up) { }
             public void Move()
             {
                 if (Alife)
@@ -98,12 +98,12 @@ namespace GameLibrary
             {
                 Alife = false;
             }
-            void Add(Coord xy)
+            void Add(Coordinates xy)
             {
                 Body.Insert(0, xy);
                 Location.AddSnake(xy);
             }
-            void Remove(Coord xy)
+            void Remove(Coordinates xy)
             {
                 Body.RemoveAt(Body.Count - 1);
                 Location.RemoveSnake(xy);

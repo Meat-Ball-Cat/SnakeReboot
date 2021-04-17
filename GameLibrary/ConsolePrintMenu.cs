@@ -7,7 +7,7 @@ namespace GameLibrary
     {
         public class ConsolePrintMenu : DrawingRectangle<SignConsole>
         {
-            public ConsolePrintMenu(int width, int height, ICoordPrint<SignConsole> location, KeyboardMenu<ButtonInConsole> menu) : base(width, height, location)
+            public ConsolePrintMenu(int width, int height, IDrawingByCoordinates<SignConsole> location, KeyboardMenu<ButtonInConsole> menu) : base(width, height, location)
             {
                 Menu = menu;
                 menu.ChangeButton += ChangeButton;

@@ -4,14 +4,14 @@ using ToolsLibrary;
 
 namespace SquareRectangle
 {
-    public class ConsoleWithSquare : Rectangle, ISecuredPrinter<SignConsole>
+    public class ConsoleWithSquare : Rectangle, ISecuredDrawing<SignConsole>
     {
         private static ConsoleWithSquare Value;
-        Dictionary<object, Coord> Objects { get; }
+        Dictionary<object, Coordinates> ObjectInRectangle { get; }
         private ConsoleWithSquare() : base(Console.WindowWidth / 2, Console.WindowHeight)
         {
             Value = this;
-            Objects = new Dictionary<object, Coord>();
+            ObjectInRectangle = new Dictionary<object, Coordinates>();
         }
         public static ConsoleWithSquare CreateConsoleWithSquare()
         {
@@ -21,11 +21,11 @@ namespace SquareRectangle
             }
             return Value;
         }
-        public void Print(Coord coord, SignConsole sign, object initiator)
+        public void Draw(Coordinates coord, SignConsole sign, object initiator)
         {
-            if (Objects.ContainsKey(initiator))
+            if (ObjectInRectangle.ContainsKey(initiator))
             {
-                coord += Objects[initiator];
+                coord += ObjectInRectangle[initiator];
                 Console.SetCursorPosition(coord.X * 2, coord.Y);
                 if (Console.BackgroundColor != sign.BackColor)
                 {
@@ -39,17 +39,17 @@ namespace SquareRectangle
             }
         }
 
-        public bool Registrated(Coord O, object initiator, Coord[] values = null)
+        public bool Register(Coordinates O, object initiator, Coordinates[] values = null)
         {
-            Objects.Add(initiator, O);
+            ObjectInRectangle.Add(initiator, O);
             return true;
         }
 
-        public void Unregistrated(object initiator)
+        public void CancelRegistration(object initiator)
         {
-            if (Objects.ContainsKey(initiator))
+            if (ObjectInRectangle.ContainsKey(initiator))
             {
-                Objects.Remove(initiator);
+                ObjectInRectangle.Remove(initiator);
             }
         }
     }

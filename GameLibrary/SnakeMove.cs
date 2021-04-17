@@ -9,10 +9,10 @@ namespace GameLibrary
         {
             Action actions = default;
             public int Speed { get; private set; }
-            public bool Alife { get; private set; }
+            public bool? Live { get; private set; }
             public SnakeMove(int speed)
             {
-                Alife = true;
+                Live = true;
                 Speed = speed;
             }
             public void ResetSpead(int newSpeed)
@@ -29,20 +29,20 @@ namespace GameLibrary
             }
             public void Start()
             {
-                while (Alife)
+                while (Live != false)
                 {
-                    actions?.Invoke();
-                    Thread.Sleep(Speed);
+                    if (Live == true)
+                    {
+                        actions?.Invoke();
+                        Thread.Sleep(Speed);
+                    }
                 }
             }
-            public void Acceleration(double acc)
-            {
-                Speed = (int)(Speed * acc);
-            }
-            public void Stop()
-            {
-                Alife = false;
-            }
+            public void Pause() => Live = null;
+            public void Continue() => Live = true;
+            public void Stop() => Live = false;
+            public void Acceleration(double acc) => Speed = (int)(Speed * acc);
+            
         }
     }
 }

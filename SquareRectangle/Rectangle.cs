@@ -13,9 +13,9 @@ namespace SquareRectangle
         }
         public int Width { get; }
         public int Height { get; }
-        public Coord[] GetCoord()
+        public Coordinates[] GetCoordinates()
         {
-            var result = new List<Coord>();
+            var result = new List<Coordinates>();
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
@@ -28,24 +28,45 @@ namespace SquareRectangle
     }
     public abstract class DrawnRectangle<T> : Rectangle, ILoad
     {
-        protected ICoordPrint<T> Location { get; }
-        public DrawnRectangle(int width, int height, ICoordPrint<T> location) : base(width, height)
+        protected IDrawingByCoordinates<T> Location { get; }
+        public DrawnRectangle(int width, int height, IDrawingByCoordinates<T> location) : base(width, height)
         {
             Location = location ?? throw new ArgumentNullException();
         }
         public abstract void Load();
         public abstract void Close();
         public abstract void Hide();
-    }
-    public abstract class DrawingRectangle<T, R> : DrawnRectangle<T>, ISecuredPrinter<R>
-    {
-        public DrawingRectangle(int width, int height, ICoordPrint<T> location) : base(width, height, location) 
+        public void Fill(T value)
         {
-            ObjectInRectangles = new Dictionary<object, Coord>();
-            Values = new object[Width, Height];
+            var coords = GetCoordinates();
+            foreach(var coord in coords)
+            {
+                Location.Draw(coord, value, this);
+            }
         }
-        protected Dictionary<object, Coord> ObjectInRectangles { get; set; }
-        protected object[,] Values { get; }
+        public void Frame(T value)
+        {
+            for(int i = 0; i < Width; i++)
+            {
+                for(int j = 0; j < Height; j++)
+                {
+                    if (i == 0 || j == 0 || i == Width - 1 || j == Height - 1)
+                    {
+                        Location.Draw((i, j), value, this);
+                    }
+                }
+            }
+        }
+    }
+    public abstract class DrawingRectangle<T, R> : DrawnRectangle<T>, ISecuredDrawing<R>, IDrawningRectangle<R>
+    {
+        public DrawingRectangle(int width, int height, IDrawingByCoordinates<T> location) : base(width, height, location) 
+        {
+            ObjectInRectangles = new Dictionary<object, Coordinates>();
+            ObjectValueOfCordinates = new object[Width, Height];
+        }
+        protected Dictionary<object, Coordinates> ObjectInRectangles { get; set; }
+        protected object[,] ObjectValueOfCordinates { get; }
         public override void Close()
         {
             if (ObjectInRectangles != null)
@@ -71,19 +92,19 @@ namespace SquareRectangle
                 ((ILoad)rectangle).Hide();
             }
         }
-        public virtual void Print(Coord coord, R value, object initiator)
+        public virtual void Draw(Coordinates coord, R value, object initiator)
         {
             coord += ObjectInRectangles[initiator];
-            if(Values[coord.X, coord.Y] == initiator)
-            Location.Print(coord, Convert(value), this);
+            if(ObjectValueOfCordinates[coord.X, coord.Y] == initiator)
+            Location.Draw(coord, Convert(value), this);
         }
 
         protected abstract T Convert(R value);
 
-        public bool Registrated(Coord O, object initiator, Coord[] values)
+        public virtual bool Register(Coordinates O, object initiator, Coordinates[] initiatorCordinates)
         {
-            bool sucsess = true;
-            foreach(var coord in values)
+            bool success = true;
+            foreach(var coord in initiatorCordinates)
             {
                 var currentCoord = coord + O;
                 if (currentCoord.X < 0 || Width <= currentCoord.X || currentCoord.Y < 0 || Height <= currentCoord.Y)
@@ -92,29 +113,29 @@ namespace SquareRectangle
                 }
             }
             ObjectInRectangles.Add(initiator, O);
-            foreach (var coord in values)
+            foreach (var coord in initiatorCordinates)
             {
                 var currentCoord = coord + O;
-                if (Values[currentCoord.X, currentCoord.Y] == null)
+                if (ObjectValueOfCordinates[currentCoord.X, currentCoord.Y] == null)
                 {
-                    Values[currentCoord.X, currentCoord.Y] = initiator;
+                    ObjectValueOfCordinates[currentCoord.X, currentCoord.Y] = initiator;
                 }
                 else
                 {
-                    sucsess = false;
+                    success = false;
                 }
             }
-            return sucsess;
+            return success;
         }
-        public void Unregistrated(object initiator)
+        public virtual void CancelRegistration(object initiator)
         {
             for(int i = 0; i < Width; i++)
             {
                 for(int j = 0; j < Height; j++)
                 {
-                    if(Values[i, j] == initiator)
+                    if(ObjectValueOfCordinates[i, j] == initiator)
                     {
-                        Values[i, j] = null;
+                        ObjectValueOfCordinates[i, j] = null;
                     }
                 }
             }
@@ -122,7 +143,7 @@ namespace SquareRectangle
     }
     public class DrawingRectangle<T> : DrawingRectangle<T, T>
     {
-        public DrawingRectangle(int width, int height, ICoordPrint<T> location) : base(width, height, location) { }
+        public DrawingRectangle(int width, int height, IDrawingByCoordinates<T> location) : base(width, height, location) { }
 
         protected override T Convert(T value) => value;
     }

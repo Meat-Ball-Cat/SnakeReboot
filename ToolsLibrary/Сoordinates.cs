@@ -1,37 +1,37 @@
 ﻿namespace ToolsLibrary
 {
-    public struct Coord
+    public struct Coordinates
     {
         public int X { get; private set; }
         public int Y { get; private set; }
-        public Coord(int x, int y)
+        public Coordinates(int x, int y)
         {
             this.X = x;
             this.Y = y;
         }
-        public static Coord operator +(Coord x, Coord y)
+        public static Coordinates operator +(Coordinates x, Coordinates y)
         {
-            return new Coord(x.X + y.X, x.Y + y.Y);
+            return new Coordinates(x.X + y.X, x.Y + y.Y);
         }
-        public static Coord operator -(Coord x, Coord y)
+        public static Coordinates operator -(Coordinates x, Coordinates y)
         {
-            return new Coord(x.X - y.X, x.Y - y.Y);
+            return new Coordinates(x.X - y.X, x.Y - y.Y);
         }
-        public static implicit operator (int x, int y)(Coord value)
+        public static implicit operator (int x, int y)(Coordinates value)
         {
             return (value.X, value.Y);
         }
-        public static implicit operator Coord((int x, int y) value)
+        public static implicit operator Coordinates((int x, int y) value)
         {
-            return new Coord(value.x, value.y);
+            return new Coordinates(value.x, value.y);
         }
         public override string ToString()
         {
             return $"x={X} y={Y}";
         }
-        public Coord Up() => (X, Y - 1);
-        public Coord Down() => (X, Y + 1);    
-        public Coord Left() => (X - 1, Y);
-        public Coord Right() => (X + 1, Y);
+        public Coordinates Up() => (X, Y - 1);
+        public Coordinates Down() => (X, Y + 1);    
+        public Coordinates Left() => (X - 1, Y);
+        public Coordinates Right() => (X + 1, Y);
     }
 }

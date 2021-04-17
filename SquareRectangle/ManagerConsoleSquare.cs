@@ -5,23 +5,23 @@ using ToolsLibrary;
 
 namespace SquareRectangle
 {
-    public class ManagerConsoleSquare : DrawnRectangle<SignConsole>, ISecuredPrinter<SignConsole>
+    public class ManagerConsoleSquare : DrawnRectangle<SignConsole>, ISecuredDrawing<SignConsole>, IDrawningRectangle<SignConsole>
     {
-        Dictionary<object, Coord> ObjectInRectangles { get; set; }
-        Stack<object>[,] Values { get; }
-        public ManagerConsoleSquare(int width, int height, ICoordPrint<SignConsole> location) : base(width, height, location)
+        Dictionary<object,Coordinates> ObjectInRectangles { get; set; }
+        Stack<object>[,] ObjectValueOfCordinates { get; }
+        public ManagerConsoleSquare(int width, int height, IDrawingByCoordinates<SignConsole> location) : base(width, height, location)
         {
-            ObjectInRectangles = new Dictionary<object, Coord>();
-            Values = new Stack<object>[Width, Height];
+            ObjectInRectangles = new Dictionary<object, Coordinates>();
+            ObjectValueOfCordinates = new Stack<object>[Width, Height];
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    Values[i, j] = new Stack<object>();
+                    ObjectValueOfCordinates[i, j] = new Stack<object>();
                 }
             }
         }
-        public bool Registrated(Coord O, object initiator, Coord[] values)
+        public bool Register(Coordinates O, object initiator, Coordinates[] values)
         {
             bool sucsess = true;
             foreach (var coord in values)
@@ -36,11 +36,11 @@ namespace SquareRectangle
             foreach (var coord in values)
             {
                 var currentCoord = coord + O;
-                Values[currentCoord.X, currentCoord.Y].Push(initiator);
+                ObjectValueOfCordinates[currentCoord.X, currentCoord.Y].Push(initiator);
             }
             return sucsess;
         }
-        public void Unregistrated(object value)
+        public void CancelRegistration(object value)
         {
             if (ObjectInRectangles.ContainsKey(value))
             {
@@ -49,18 +49,18 @@ namespace SquareRectangle
                 {
                     for (int j = 0; j < Height; j++)
                     {
-                        Values[i, j] = new Stack<object>(Values[i, j].Where(x => x != value).Reverse());
+                        ObjectValueOfCordinates[i, j] = new Stack<object>(ObjectValueOfCordinates[i, j].Where(x => x != value).Reverse());
                     }
                 }
                 ObjectInRectangles.Remove(value);
             }
         }
-        public void Print(Coord coord, SignConsole value, object initiator)
+        public void Draw(Coordinates coord, SignConsole value, object initiator)
         {
             coord += ObjectInRectangles[initiator];
-            if (Values[coord.X, coord.Y].Peek() == initiator)
+            if (ObjectValueOfCordinates[coord.X, coord.Y].Peek() == initiator)
             {
-                Location.Print(coord, value, this);
+                Location.Draw(coord, value, this);
             }
         }
         public override void Hide()

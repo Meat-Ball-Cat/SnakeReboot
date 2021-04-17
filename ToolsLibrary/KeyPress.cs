@@ -7,14 +7,28 @@ namespace TolsLibrary
 {
     public class Event
     {
-        public EventHandler Handler { get; set; }
-        public Event(EventHandler handler)
+        bool Multy { get; set; }
+        public EventHandler Handler { get; private set; }
+        public Event(EventHandler handler, bool multy = false)
         {
             Handler = handler;
+            Multy = multy;
+        }
+        public void Set(EventHandler handler, bool multy = false)
+        {
+            Handler = handler;
+            Multy = multy;
         }
         public void BeginInvoke(object sender)
         {
-            Handler?.BeginInvoke(sender, new EventArgs(), null, null);
+            if (Multy)
+            {
+                Handler?.BeginInvoke(sender, new EventArgs(), null, null);
+            }
+            else
+            {
+                Handler?.Invoke(sender, new EventArgs());
+            }
         }
         public override bool Equals(object obj)
         {
@@ -94,7 +108,8 @@ namespace TolsLibrary
             if (Presets.ContainsKey(name))
             {
                 var now = Presets[name];
-                return now.Where(p => p.Value.Equals(value)).Select(p => p.Key).Single();
+                var result = now.Where(p => p.Value == value).Select(p => p.Key).ToArray();
+                return result.Length == 1 ? result[0] : default;
             }
             return default;
         }

@@ -8,14 +8,14 @@ namespace GameLibrary
     {
         public abstract int Length { get; }
 
-        public ConsoleWriter(int width, int height, ICoordPrint<SignConsole> location) : base(width, height, location) { }
+        public ConsoleWriter(int width, int height, IDrawingByCoordinates<SignConsole> location) : base(width, height, location) { }
         public abstract void WriteLine(string value);
     }
     public class BigPixelPrint : ConsoleWriter
     {
         Letters Library { get; }
         public override int Length { get; }
-        public BigPixelPrint(int width, int height, ICoordPrint<SignConsole> location, Letters library) : base(width, height, location)
+        public BigPixelPrint(int width, int height, IDrawingByCoordinates<SignConsole> location, Letters library) : base(width, height, location)
         {
             if(Height < 5 || Width < 5)
             {
@@ -26,13 +26,13 @@ namespace GameLibrary
         }
         void PrintChar(char value, int position)
         {
-            Coord coord = (position * 6, 0);
+            Coordinates coord = (position * 6, 0);
             for(int i = 0; i < 5; i++)
             {
                 var charValue = Library[value];
                 for (int j = 0; j < 5; j++)
                 {
-                    Location.Print(coord + (1 + i, j), charValue[i + j * 5] ? new SignConsole(' ', ConsoleColor.White) : new SignConsole(' '), this);
+                    Location.Draw(coord + (1 + i, j), charValue[i + j * 5] ? new SignConsole(' ', ConsoleColor.White) : new SignConsole(' '), this);
                 }
             }
         }

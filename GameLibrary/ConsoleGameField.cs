@@ -7,7 +7,7 @@ namespace GameLibrary
     {
 
         Dictionary<GamesSquareValues, SignConsole> SquareValue;
-        public ConsoleGameField(int width, int height, ICoordPrint<SignConsole> location, Dictionary<GamesSquareValues, SignConsole> squareValue) 
+        public ConsoleGameField(int width, int height, IDrawingByCoordinates<SignConsole> location, Dictionary<GamesSquareValues, SignConsole> squareValue) 
             : base(width, height, location)
         {
             SquareValue = squareValue;
