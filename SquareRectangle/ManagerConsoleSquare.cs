@@ -80,9 +80,17 @@ namespace SquareRectangle
         }
         public override void Load()
         {
-            foreach (var rectangle in ObjectInRectangles.Keys)
+            var visableObject = new List<object>();
+            foreach (var obj in ObjectValueOfCordinates)
             {
-                ((ILoad)rectangle).Load();
+                if (!visableObject.Contains(obj.Peek()) && obj.Peek() != null)
+                {
+                    visableObject.Add(obj.Peek());
+                }
+            }
+            foreach(var loadObject in visableObject)
+            {
+                ((ILoad)loadObject).Load();
             }
         }
     }

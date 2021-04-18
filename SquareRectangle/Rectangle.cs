@@ -44,17 +44,56 @@ namespace SquareRectangle
                 Location.Draw(coord, value, this);
             }
         }
-        public void Frame(T value)
+    }
+    public class Frame<T> : ILoad
+    {
+        Coordinates[] Coord{ get; }
+        int Width { get; set; }
+        int Height { get; set; }
+        T Value { get; set; }
+        IDrawingByCoordinates<T> Location { get; }
+        public Frame(int width, int height, T value, IDrawingByCoordinates<T> location)
         {
-            for(int i = 0; i < Width; i++)
+            Width = width;
+            Height = height;
+            Value = value;
+            Location = location;
+            Coord = new Coordinates[Width * 2 + Height * 2 - 4];
+            var t = 0;
+            for (int i = 0; i < Width; i++)
             {
-                for(int j = 0; j < Height; j++)
+                for (int j = 0; j < Height; j++)
                 {
-                    if (i == 0 || j == 0 || i == Width - 1 || j == Height - 1)
+                    if (i == 0 || i == Width - 1 || j == 0 || j == Height - 1)
                     {
-                        Location.Draw((i, j), value, this);
+                        Coord[t++] = (i, j);
                     }
                 }
+            }
+        }
+        public Coordinates[] GetCoordinates()
+        {
+            return (Coordinates[])Coord.Clone();
+        }
+
+        public void Load()
+        {
+            foreach(var coord in Coord)
+            {
+                Location.Draw(coord, Value, this);
+            }
+        }
+
+        public void Close()
+        {
+            Hide();
+        }
+
+        public void Hide()
+        {
+            foreach (var coord in Coord)
+            {
+                Location.Draw(coord, default, this);
             }
         }
     }
@@ -126,6 +165,12 @@ namespace SquareRectangle
                 }
             }
             return success;
+        }
+        public void Frame(R value)
+        {
+            var frame = new Frame<R>(Width, Height, value, (IDrawingByCoordinates<R>)this);
+            Register((0, 0), frame, frame.GetCoordinates());
+
         }
         public virtual void CancelRegistration(object initiator)
         {

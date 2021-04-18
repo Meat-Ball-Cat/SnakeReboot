@@ -13,6 +13,7 @@ namespace GameLibrary
     }
     public class BigPixelPrint : ConsoleWriter
     {
+        string LastValue { get; set; }
         Letters Library { get; }
         public override int Length { get; }
         public BigPixelPrint(int width, int height, IDrawingByCoordinates<SignConsole> location, Letters library) : base(width, height, location)
@@ -39,13 +40,20 @@ namespace GameLibrary
         public override void WriteLine(string str)
         {
             str = str.ToUpper();
+            LastValue = str;
             for(int i = 0; i < Math.Min(str.Length, Length); i++)
             {
                 PrintChar(str[i], i);
             }
         }
 
-        public override void Load() { }
+        public override void Load() 
+        {
+            if(LastValue != null)
+            {
+                WriteLine(LastValue);
+            }
+        }
 
         public override void Close()
         {

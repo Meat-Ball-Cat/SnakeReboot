@@ -404,8 +404,10 @@ namespace SnakeReboot
             var pauseMenu = new ConsolePrintMenu(location.Width / 2, location.Height / 3 * 2, location, menu);
             location.Register((location.Width / 4, location.Height / 6), pauseMenu, pauseMenu.GetCoordinates());
             var printer = new BigPixelPrint(pauseMenu.Width - 2, 5, pauseMenu, letters);
+            pauseMenu.Frame(new SignConsole('0'));
             pauseMenu.Register((2, 2), printer, printer.GetCoordinates());
             pauseMenu.SetWriter(printer);
+           
             KeyPress.SetControl("Menu");
             void SetControl()
             {
@@ -415,15 +417,15 @@ namespace SnakeReboot
             }
             SetControl();
 
-            var b1 = new ButtonInConsole(pauseMenu.Width - 10, 1, pauseMenu, SignConsole.GetSignConsoles("Continue"));
-            var b2 = new ButtonInConsole(pauseMenu.Width - 10, 1, pauseMenu, SignConsole.GetSignConsoles("Settings"));
-            var b3 = new ButtonInConsole(pauseMenu.Width - 10, 1, pauseMenu, SignConsole.GetSignConsoles("Exit"));
-            pauseMenu.Register((5, 8), b1, b1.GetCoordinates());
-            pauseMenu.Register((5, 10), b2, b2.GetCoordinates());
-            pauseMenu.Register((5, 12), b3, b3.GetCoordinates());
+            var pauseContinue = new ButtonInConsole(pauseMenu.Width - 10, 1, pauseMenu, SignConsole.GetSignConsoles("Continue"));
+            var pauseSetting = new ButtonInConsole(pauseMenu.Width - 10, 1, pauseMenu, SignConsole.GetSignConsoles("Settings"));
+            var pauseExit = new ButtonInConsole(pauseMenu.Width - 10, 1, pauseMenu, SignConsole.GetSignConsoles("Exit"));
+            pauseMenu.Register((5, 8), pauseContinue, pauseContinue.GetCoordinates());
+            pauseMenu.Register((5, 10), pauseSetting, pauseSetting.GetCoordinates());
+            pauseMenu.Register((5, 12), pauseExit, pauseExit.GetCoordinates());
 
-            menu.AddLastButton(b1);
-            b1.IsPressed += () =>
+            menu.AddLastButton(pauseContinue);
+            pauseContinue.IsPressed += () =>
             {
                 pauseMenu.Close();
                 location.CancelRegistration(pauseMenu);
@@ -433,23 +435,22 @@ namespace SnakeReboot
                 contin?.Invoke();
             };
 
-            menu.AddLastButton(b2);
-            b2.IsPressed += () =>
+            menu.AddLastButton(pauseSetting);
+            pauseSetting.IsPressed += () =>
             {
                 pauseMenu.Hide();
                 void act()
                 {
-                    pauseMenu.Load();
+                    location.Load();
                     SetControl();
                 }
                 SnakeSettings(location, act, true);
             };
 
-            menu.AddLastButton(b3);
-            b3.IsPressed += () =>
+            menu.AddLastButton(pauseExit);
+            pauseExit.IsPressed += () =>
             {
                 pauseMenu.Close();
-                pauseMenu.Frame(new SignConsole(' '));
                 location.CancelRegistration(pauseMenu);
                 Keys[needOption.menuDown].Set(null);
                 Keys[needOption.menuUp].Set(null);
@@ -457,7 +458,6 @@ namespace SnakeReboot
                 exit?.Invoke();
             };
             pauseMenu.Fill(new SignConsole(' '));
-            pauseMenu.Frame(new SignConsole('0'));
             pauseMenu.Load();
         }
     }

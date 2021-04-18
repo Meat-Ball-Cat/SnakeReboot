@@ -22,7 +22,7 @@ namespace SquareRectangle
         bool Register(Coordinates O, object initiator, Coordinates[] values);
         void CancelRegistration(object initiator);
     }
-    public interface IDrawningRectangle<T> : IRectangle, ISecuredDrawing<T> { }
+    public interface IDrawningRectangle<T> : IRectangle, ISecuredDrawing<T>, ILoad { }
     public interface IWriter
     {
         void WriteLine(string value);
