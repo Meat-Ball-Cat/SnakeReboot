@@ -11,6 +11,7 @@ namespace GameLibrary
         nothing,
         snake,
         snakeBerry,
+        snakeEventBerry,
         snakeWall 
     }
 }

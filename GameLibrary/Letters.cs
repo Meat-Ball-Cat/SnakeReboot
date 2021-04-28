@@ -13,7 +13,7 @@ namespace GameLibrary
         static List<string> Names { get; }
         static Letters()
         {
-            using (var input = new FileStream($"data_Name", FileMode.Open))
+            using (var input = new FileStream($"data_Name.xml", FileMode.Open))
             {
                 if (input.Length != 0)
                 {
@@ -39,7 +39,7 @@ namespace GameLibrary
             {
                 Names.Add(name);
             }
-            using (var input = new FileStream($"data{name}", FileMode.OpenOrCreate))
+            using (var input = new FileStream($"data{name}.xml", FileMode.OpenOrCreate))
             {              
                 while (input.Position != input.Length)
                 {
@@ -70,7 +70,7 @@ namespace GameLibrary
         }
         public void Save()
         {
-            using (var input = new FileStream($"data{Name}", FileMode.Create))
+            using (var input = new FileStream("data{Name}.xml", FileMode.Create))
             {
                 var form = new BinaryFormatter();
                 foreach(var value in ValuePairs)
@@ -79,7 +79,7 @@ namespace GameLibrary
         }
         public static void AllSave()
         {
-            using (var input = new FileStream($"data_Name", FileMode.Create))
+            using (var input = new FileStream("data_Name.xml", FileMode.Create))
             {
                 var form = new BinaryFormatter();
                 form.Serialize(input, Names);

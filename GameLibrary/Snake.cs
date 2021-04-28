@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using ToolsLibrary;
 
 namespace GameLibrary
@@ -29,9 +30,11 @@ namespace GameLibrary
             public SnakeField Location { get; }
             List<Coordinates> Body { get; }
             bool Controbility { get; set; }
+            object locker = new object();
             Direction.direction NowDirection { get; set; }
             Direction.direction NextDirection { get; set; }
             public event Action<Snake> IsEat;
+            public event Action<Snake> IsVeryEat;
             public event Action<Snake> Die = (Snake) => Snake.IsDie();
             public bool Alife { get; private set; } = true;
             public Coordinates Head { get { return Body[0]; } }
@@ -50,18 +53,21 @@ namespace GameLibrary
                 if (Alife)
                 {
                     var next = Head;
-                    switch (NowDirection)
+                    lock (locker)
                     {
-                        case Direction.direction.up: { next = next.Up(); } break;
-                        case Direction.direction.down: { next = next.Down(); } break;
-                        case Direction.direction.left: { next = next.Left(); } break;
-                        case Direction.direction.right: { next = next.Right(); } break;
+                        switch (NowDirection)
+                        {
+                            case Direction.direction.up: { next = next.Up(); } break;
+                            case Direction.direction.down: { next = next.Down(); } break;
+                            case Direction.direction.left: { next = next.Left(); } break;
+                            case Direction.direction.right: { next = next.Right(); } break;
+                        }
                     }
                     switch (Location.ReturnCell(next))
                     {
                         case GamesSquareValues.nothing:
-                            {
-                                Add(next);
+                            {        
+                                Add(next);                       
                                 Remove(Body[Body.Count - 1]);
                             }
                             break;
@@ -71,23 +77,43 @@ namespace GameLibrary
                                 IsEat(this);
                             }
                             break;
+                        case GamesSquareValues.snakeEventBerry:
+                            {
+                                Add(next);
+                                IsVeryEat(this);
+                                EventBerry.DeleteBerry(Location, next);
+                            }
+                            break;
                         case GamesSquareValues.snakeWall: { Die(this); } break;
-                        case GamesSquareValues.snake: { Die(this); } break;
+                        case GamesSquareValues.snake: 
+                            { 
+                                if(next.Equals(Body[Body.Count - 1]))
+                                {
+                                    goto case GamesSquareValues.nothing;
+                                }
+                                Die(this); 
+                            } 
+                            break;
                         default: throw new Exception("Неверное значение поля змейки");
                     }
-                    Controbility = true;
+                    lock (locker)
+                    {
+                        Controbility = true;                       
+                    }
                     ChangeDirection(NextDirection);
-
                 }
             }
 
             private void ChangeDirection(Direction.direction direction)
             {
-                NextDirection = direction;
-                if (Controbility && !Direction.IsOpposit(NextDirection, NowDirection))
+                lock (locker)
                 {
-                    NowDirection = NextDirection;
-                    Controbility = false;
+                    NextDirection = direction;
+                    if (Controbility && !Direction.IsOpposit(NextDirection, NowDirection))
+                    {
+                        NowDirection = NextDirection;
+                        Controbility = false;
+                    }
                 }
             }
             public void Up() => ChangeDirection(Direction.direction.up);
@@ -106,7 +132,10 @@ namespace GameLibrary
             void Remove(Coordinates xy)
             {
                 Body.RemoveAt(Body.Count - 1);
-                Location.RemoveSnake(xy);
+                if (!Body[0].Equals(xy))
+                {
+                    Location.RemoveSnake(xy);
+                }
             }
         }
     }

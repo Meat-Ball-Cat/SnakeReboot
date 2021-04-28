@@ -3,13 +3,20 @@ using System.Collections.Generic;
 
 namespace GameLibrary
 {
-    namespace MenuLibrary
-    {
+    namespace MenuLibrary 
+    { 
         public delegate void ChangeButton<T>(T last, T now) where T : IButton;
-        public class KeyboardMenu<T> where T : IButton
+        interface IMenu<T> where T : IButton
+        {
+            void Press();
+            void Next();
+            void Previous();
+            void AddLastButton(T button);
+        }      
+        public class KeyboardMenu<T> : IMenu<T> where T : IButton
         {
             public string Name { get; }
-            public LinkedList<T> Buttons { get; }
+            LinkedList<T> Buttons { get; }
             public LinkedListNode<T> CurrentButton { get; set; }
             bool Curcule { get; set; }
             public event ChangeButton<T> ChangeButton;

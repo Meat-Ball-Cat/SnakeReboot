@@ -34,12 +34,13 @@ namespace GameLibrary
                         }
                     }
                 }
-                Console.SetCursorPosition(0, 0);
             }
             private void DisplayState(Coordinates xy) => Location.Draw(xy, Value[xy.X, xy.Y], this);
             public void AddSnake(Coordinates coord) => ChangeCell(coord, GamesSquareValues.snake);
             public void RemoveSnake(Coordinates coord) => ChangeCell(coord, GamesSquareValues.nothing);
             public void AddBerry(Coordinates coord) => ChangeCell(coord, GamesSquareValues.snakeBerry);
+            public void AddEventBerry(Coordinates coord) => ChangeCell(coord, GamesSquareValues.snakeEventBerry);
+            public void RemoveEventBerry(Coordinates coord) => ChangeCell(coord, GamesSquareValues.nothing);
 
             public override void Load()
             {

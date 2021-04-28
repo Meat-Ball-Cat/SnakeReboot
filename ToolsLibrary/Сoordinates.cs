@@ -1,6 +1,7 @@
-﻿namespace ToolsLibrary
+﻿using System;
+namespace ToolsLibrary
 {
-    public struct Coordinates
+    public struct Coordinates : IEquatable<Coordinates>
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -33,5 +34,9 @@
         public Coordinates Down() => (X, Y + 1);    
         public Coordinates Left() => (X - 1, Y);
         public Coordinates Right() => (X + 1, Y);
+        public bool Equals(Coordinates other)
+        {
+            return X == other.X && Y == other.Y;
+        }
     }
 }

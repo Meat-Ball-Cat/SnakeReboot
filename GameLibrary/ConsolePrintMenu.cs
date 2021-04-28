@@ -51,7 +51,10 @@ namespace GameLibrary
                     ((ILoad)rectangle).Load();
                 }
                 Writer?.WriteLine(Menu.Name);
-                SetButton(Menu.CurrentButton.Value);
+                if (Menu.CurrentButton != null)
+                {
+                    SetButton(Menu.CurrentButton.Value);
+                }
             }
         }
     }

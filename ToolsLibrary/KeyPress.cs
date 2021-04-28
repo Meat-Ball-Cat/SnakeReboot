@@ -62,7 +62,7 @@ namespace TolsLibrary
                 }
             }
         }
-        public static Dictionary<ConsoleKey, Event> CurrentControl { get { return Presets[CurrentPresetName]; } }
+        public static Dictionary<ConsoleKey, Event> CurrentControl { get { return CurrentPresetName == null ? null : Presets[CurrentPresetName]; } }
         static Dictionary<string, Dictionary<ConsoleKey, Event>> Presets = new Dictionary<string, Dictionary<ConsoleKey, Event>>();
         public static bool SetControl(string presetName)
         {
@@ -72,6 +72,10 @@ namespace TolsLibrary
                 return true;
             }
             return false;
+        }
+        public static void ResetControl()
+        {
+            _currentPresetName = null;
         }
         public static bool AddControl(string contrilName)
         {
@@ -99,7 +103,8 @@ namespace TolsLibrary
             while (true)
             {
                 var PressedKey = Console.ReadKey(true);
-                CurrentControl.TryGetValue(PressedKey.Key, out var keyEventHandler);
+                Event keyEventHandler = null;
+                CurrentControl?.TryGetValue(PressedKey.Key, out keyEventHandler);
                 keyEventHandler?.BeginInvoke(PressedKey);
             }
         }

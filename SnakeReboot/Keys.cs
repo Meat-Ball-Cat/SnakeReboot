@@ -16,7 +16,11 @@ namespace SnakeReboot
         snakeUp,
         snakeDown,
         snakeLeft,
-        snakeRigh
+        snakeRigh,
+        secondSnakeUp,
+        secondSnakeDown,
+        secondSnakeLeft,
+        secondSnakeRigh
     } 
     public class Keys
     {
